@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+  <title>My Pkm Go</title>
+
+  <style>
+    /* Kleine Hilfsstile */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden; /* kein Scrollen */
+      font-family: "Trebuchet MS", sans-serif;
+    }
+
+    .sprite-shadow { filter: drop-shadow(0 8px 12px rgba(0,0,0,0.45)); }
+    .hp-bar-bg { background: rgba(255,255,255,0.06); }
+    .hp-bar-fill { transition: width 500ms ease; height: 100%; border-radius: 999px; }
+
+
+
+    .textbox {
+      background: #f8f8f8;
+      border: 4px solid #3a3a3a;
+      border-radius: 6px;
+      padding: 16px;
+      box-shadow: inset 0 0 0 4px #ffffff;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .textbox p {
+      margin: 0;
+      font-size: 50px;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .choice {
+    background: #ffffff;
+    border: 3px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    font-size: 50px;
+    
+    }
+
+    .choice:hover {
+      background: #ffe066;
+    }
+
+    .hp-container {
+      width: 180px;
+      background: #eaeaea;
+      border: 3px solid #3a3a3a;
+      border-radius: 4px;
+      padding: 2px;
+      margin-bottom: 8px;
+    }
+
+
+    .hp-bar {
+      height: 14px;
+      width: 100%;
+      background: #4caf50;
+      transition: width 0.4s linear, background-color 0.4s linear;
+    }
+
+    .hp-bar.medium { background: #ff9800; }
+    .hp-bar.low { background: #f44336; }
+
+    .hp-block {
+      position: absolute;
+      width: 200px;
+    }
+
+
+    .hp-label {
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+  </style>
+  </head>
+  <body style="margin: 0; padding: 0">
+    
+    <canvas id="myCanvas" style="display: flex;"></canvas>
+
+      <div class="hp-block" style="top: 20px">
+        <div class="hp-label">Enemy HP</div>
+        <div class="hp-container">
+          <div id="enemy-hp" class="hp-bar"></div>
+        </div>
+      </div>
+
+
+      <div class="hp-block" style="top: 50px">
+        <div class="hp-label">Your HP</div>
+        <div class="hp-container">
+          <div id="player-hp" class="hp-bar"></div>
+        </div>
+      </div>
+
+    <div id="dialogueBox" class="textbox">
+      <p id="battleText"></p>
+      <div id="choices" class="choices">
+      </div>
+    </div>
+
+    <script src="./dist/index.js"></script>
+  </body>
+</html>
