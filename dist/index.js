@@ -212,6 +212,9 @@ class BattleStateMachine {
         });
     }
 }
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js");
+}
 const enemySpriteData = {
     x: 1138,
     y: 7,
