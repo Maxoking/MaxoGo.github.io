@@ -256,6 +256,12 @@ window.addEventListener("keydown", (e) => {
 window.addEventListener("keyup", (e) => {
     keys[e.key] = false;
 });
+window.addEventListener("touchstart", (e) => {
+    keys[" "] = true;
+});
+window.addEventListener("touchend", (e) => {
+    keys[" "] = false;
+});
 const stateMachine = new BattleStateMachine();
 stateMachine.setState(new BattleStart);
 const playerHpBar = document.getElementById("player-hp");

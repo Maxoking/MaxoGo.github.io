@@ -304,6 +304,14 @@ window.addEventListener("keyup", (e: KeyboardEvent) => {
   keys[e.key] = false;
 });
 
+window.addEventListener("touchstart", (e: TouchEvent) => {
+  keys[" "] = true;
+});
+
+window.addEventListener("touchend", (e: TouchEvent) => {
+  keys[" "] = false;
+});
+
 
 const stateMachine = new BattleStateMachine();
 stateMachine.setState(new BattleStart);
