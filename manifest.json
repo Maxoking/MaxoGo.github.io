@@ -3,12 +3,12 @@
   "short_name": "MaxoGo",
   "display": "fullscreen",
   "orientation": "portrait",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "lang": "de",
   "dir": "ltr",
   "icons": [
     {
-      "src": "pokeball.png",
+      "src": "./pokeball.png",
       "type": "image/png",
       "sizes": "512x512"
     }
@@ -21,7 +21,7 @@
       "form_factor": "wide"
     },
     {
-      "src": "Screenshot_notwide.png",
+      "src": "./Screenshot_notwide.png",
       "type": "image/png",
       "sizes": "930x865"
     }
