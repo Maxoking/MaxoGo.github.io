@@ -3,7 +3,7 @@
   "short_name": "MaxoGo",
   "display": "fullscreen",
   "orientation": "portrait",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "lang": "de",
   "dir": "ltr"
 }
