@@ -249,8 +249,8 @@ if ("serviceWorker" in navigator) {
 
 const enemySpriteData =
     {
-        x:      1138, 
-        y:      7, 
+        x:      0, 
+        y:      72, 
         xScale: 256, 
         yScale: 256
     }
@@ -279,14 +279,14 @@ pkmn2.moves = [
   
 
 const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+// canvas.width = window.innerWidth;
+// canvas.height = window.innerHeight;
 const ctx = canvas?.getContext("2d");
 const battleBackgroundImage = new Image();
 battleBackgroundImage.src = './assets/battleBackground.png';
 
 const dialogBox = document.getElementById("dialogueBox") as HTMLBaseElement;
-dialogBox.style.height = `${canvas.height / 4}px`;
+//dialogBox.style.height = `${canvas.height / 4}px`;
 
 
 const enemyImage = new Image();
@@ -344,6 +344,22 @@ async function setEnemyHP(value: number) {
   await updateBar(enemyHpBar, value);
 }
 
+function scaleBattle() {
+  const baseWidth = 640;
+  const baseHeight = 360 + 64;
+
+  const scale = Math.min(
+    window.innerWidth / baseWidth,
+    window.innerHeight / baseHeight
+  );
+
+  const battle = document.getElementById("battle")!;
+  battle.style.transform = `scale(${scale})`;
+
+}
+
+window.addEventListener("resize", scaleBattle);
+scaleBattle();
 
 
 // Start once images load

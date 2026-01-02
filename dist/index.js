@@ -216,8 +216,8 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js");
 }
 const enemySpriteData = {
-    x: 1138,
-    y: 7,
+    x: 0,
+    y: 72,
     xScale: 256,
     yScale: 256
 };
@@ -238,13 +238,13 @@ pkmn2.moves = [
     new Move("Glut", 60, "Feuer")
 ];
 const canvas = document.getElementById("myCanvas");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+// canvas.width = window.innerWidth;
+// canvas.height = window.innerHeight;
 const ctx = canvas === null || canvas === void 0 ? void 0 : canvas.getContext("2d");
 const battleBackgroundImage = new Image();
 battleBackgroundImage.src = './assets/battleBackground.png';
 const dialogBox = document.getElementById("dialogueBox");
-dialogBox.style.height = `${canvas.height / 4}px`;
+//dialogBox.style.height = `${canvas.height / 4}px`;
 const enemyImage = new Image();
 enemyImage.src = './assets/sprites/6.png';
 const playerImage = new Image();
@@ -289,6 +289,15 @@ function setEnemyHP(value) {
         yield updateBar(enemyHpBar, value);
     });
 }
+function scaleBattle() {
+    const baseWidth = 640;
+    const baseHeight = 360 + 64;
+    const scale = Math.min(window.innerWidth / baseWidth, window.innerHeight / baseHeight);
+    const battle = document.getElementById("battle");
+    battle.style.transform = `scale(${scale})`;
+}
+window.addEventListener("resize", scaleBattle);
+scaleBattle();
 // Start once images load
 Promise.all([
     new Promise(res => battleBackgroundImage.onload = () => res()),
