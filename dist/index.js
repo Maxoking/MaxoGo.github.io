@@ -216,16 +216,16 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js");
 }
 const enemySpriteData = {
-    x: 0,
-    y: 72,
-    xScale: 256,
-    yScale: 256
+    x: 202,
+    y: 48,
+    xScale: 64,
+    yScale: 64
 };
 const playerSpriteData = {
-    x: 233,
-    y: 88,
-    xScale: 512,
-    yScale: 512
+    x: 55.2,
+    y: 126,
+    xScale: 64,
+    yScale: 64
 };
 const pkmn1 = new Pokemon("Bisaflor", 100, 7, 6, 70);
 pkmn1.moves = [
@@ -242,13 +242,18 @@ const canvas = document.getElementById("myCanvas");
 // canvas.height = window.innerHeight;
 const ctx = canvas === null || canvas === void 0 ? void 0 : canvas.getContext("2d");
 const battleBackgroundImage = new Image();
-battleBackgroundImage.src = './assets/battleBackground.png';
+battleBackgroundImage.src = './assets/battleBackgroundGrass.png';
+const BASE_WIDTH = 320;
+const BASE_HEIGHT = 180;
+canvas.width = BASE_WIDTH;
+canvas.height = BASE_HEIGHT;
+ctx.imageSmoothingEnabled = false;
 const dialogBox = document.getElementById("dialogueBox");
 //dialogBox.style.height = `${canvas.height / 4}px`;
 const enemyImage = new Image();
 enemyImage.src = './assets/sprites/6.png';
 const playerImage = new Image();
-playerImage.src = './assets/sprites/back/3.png';
+playerImage.src = './assets/sprites/back/18.png';
 const keys = {};
 window.addEventListener("keydown", (e) => {
     keys[e.key] = true;
@@ -261,6 +266,14 @@ window.addEventListener("touchstart", (e) => {
 });
 window.addEventListener("touchend", (e) => {
     keys[" "] = false;
+});
+canvas.addEventListener("click", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+    playerSpriteData.x = x - playerSpriteData.xScale / 2;
+    playerSpriteData.y = y - playerSpriteData.yScale / 2;
+    console.log("Canvas Position:", playerSpriteData.x, playerSpriteData.y);
 });
 const stateMachine = new BattleStateMachine();
 stateMachine.setState(new BattleStart);
@@ -290,14 +303,22 @@ function setEnemyHP(value) {
     });
 }
 function scaleBattle() {
-    const baseWidth = 640;
-    const baseHeight = 360 + 64;
-    const scale = Math.min(window.innerWidth / baseWidth, window.innerHeight / baseHeight);
+    const baseWidth = 1280;
+    const baseHeight = (360 + 64) * 2;
     const battle = document.getElementById("battle");
-    battle.style.transform = `scale(${scale})`;
+    const textbox = document.getElementById("battle-textbox");
+    const textbox_height = battle.clientHeight / 3;
+    const scale = Math.min(window.innerWidth / battle.clientWidth, window.innerHeight / battle.clientHeight);
+    //   battle.style.transform = `scale(${scale})`;
+    textbox.style.height = `${textbox_height}px`;
+    //   const rect = canvas.getBoundingClientRect();
+    //   const dpr = window.devicePixelRatio || 1;
+    //   // 👉 Canvas echte Pixelgröße
+    //   canvas.width = rect.width * dpr;
+    //   canvas.height = rect.height * dpr;
 }
-window.addEventListener("resize", scaleBattle);
-scaleBattle();
+// window.addEventListener("resize", scaleBattle);
+// scaleBattle();
 // Start once images load
 Promise.all([
     new Promise(res => battleBackgroundImage.onload = () => res()),
