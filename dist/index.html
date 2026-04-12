@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <link rel="manifest" href="/assets/manifest-Cdr3Y5x4.json">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="MaxoGo">
+    <meta name="apple-mobile-web-app-title" content="MaxoGo">
+    <meta name="msapplication-starturl" content="/index.html">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+
+  <title>MaxoGo</title>
+
+  <style>
+    /* Kleine Hilfsstile */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden; /* kein Scrollen */
+      font-family: "Trebuchet MS", sans-serif;
+    }
+
+    @font-face {
+      font-family: "pokemon-font-fire-red";
+      src: url('/assets/pokemon_fire_red-DHD7YkTH.ttf') format('truetype');
+    }
+
+    @font-face {
+      font-family: "pokemon-gb";
+      src: url('/assets/pokemon_gb-DI5lqJNQ.ttf') format('truetype');
+    }
+
+    .sprite-shadow { filter: drop-shadow(0 8px 12px rgba(0,0,0,0.45)); }
+    .hp-bar-bg { background: rgba(255,255,255,0.06); }
+    .hp-bar-fill { transition: width 500ms ease; height: 100%; border-radius: 999px; }
+
+ 
+    .textbox {
+      background: #f8f8f8;
+      height: 100%;
+
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr;   
+      align-items: stretch;
+      box-sizing: border-box;
+      font-family: 'pokemon-gb';
+    }
+
+
+    .textbox-text {
+      overflow: hidden;       
+      /* height: 100%; */
+      display: flex;
+
+      /* align-items: center; */
+      border: 2vw solid transparent;
+      border-image-source: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJ4AAAAwCAYAAADgk8PlAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEhSURBVHhe7d0hcoNAGIbhTU8RWRmJjOQIyMocq7JHiIyMjEQikdyiNW3SMGSm0wCfeR4HLO6dfwezbHZV9VlgZS/jG7CGzc/Ee93uS10fxs9hdufzxy28w9t7GfrTeA0swlbL6rp+eDzx9s2uVNvq93r4l3Zoy+XYXa8fhrdvdqWpm9ub8KTj+XiNr+uH6a3WpGNu46Ymw4OlCY8I4REhPCKER4TwiBAeEcIjQnhECI8I4REhPCKER4TwiBAeEcIjQnhECI8I4REhPCKER4TwiBAeEcIjQnhECI8I4REhPCKER4TwiBAeEcIjQnhETIbXDu34Fjxl3NTkGcjF4dvM6M+Hb8OS7g7fFh1ruk688v1bKVhaP1zuw4O1TH7VwtK+AOwTTzffQF3LAAAAAElFTkSuQmCC");
+      border-image-slice: 7;        /* wie weit vom Rand geschnitten wird */
+      border-image-repeat: stretch;  /* oder repeat / round */
+    }
+
+    .textbox-text p {
+      margin-left: 2vw;
+      line-height: 1.5;
+      font-size: 2vw;
+    }
+
+    .choices {
+      min-height: 0;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      /* gap: 6px; */
+      align-content: top;
+      font-family: 'pokemon-gb';
+
+      border: 2vw solid transparent;
+      border-image-source: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJ4AAAAwCAYAAADgk8PlAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEhSURBVHhe7d0hcoNAGIbhTU8RWRmJjOQIyMocq7JHiIyMjEQikdyiNW3SMGSm0wCfeR4HLO6dfwezbHZV9VlgZS/jG7CGzc/Ee93uS10fxs9hdufzxy28w9t7GfrTeA0swlbL6rp+eDzx9s2uVNvq93r4l3Zoy+XYXa8fhrdvdqWpm9ub8KTj+XiNr+uH6a3WpGNu46Ymw4OlCY8I4REhPCKER4TwiBAeEcIjQnhECI8I4REhPCKER4TwiBAeEcIjQnhECI8I4REhPCKER4TwiBAeEcIjQnhECI8I4REhPCKER4TwiBAeEcIjQnhETIbXDu34Fjxl3NTkGcjF4dvM6M+Hb8OS7g7fFh1ruk688v1bKVhaP1zuw4O1TH7VwtK+AOwTTzffQF3LAAAAAElFTkSuQmCC");
+      border-image-slice: 7;        /* wie weit vom Rand geschnitten wird */
+      border-image-repeat: stretch;  /* oder repeat / round */
+    }
+
+
+
+    .choice {
+      display: flex;
+      position: relative;
+      background: #f8f8f8;
+      text-align: left;
+      align-items: center;
+      cursor: cursor;
+      user-select: none;
+      font-size: 2vw;
+      font-family: 'pokemon-gb';
+      height: 50%;
+      
+      border: none;
+      outline: none;
+      padding-left: 3vw;
+    
+    }
+
+    .choice::before {
+      line-height: 1;
+      position: absolute;
+      content: "▶";
+      left: 0px;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+
+    .choice:hover::before {
+      opacity: 1;
+    }
+
+    .hp-container {
+      width: 100%;
+      height: 50%;
+      background: #eaeaea;
+      border: 3px solid #3a3a3a;
+      border-radius: 4px;
+      padding: 2px;
+      margin-bottom: 8px;
+    }
+
+
+    .hp-bar {
+      height: 14px;
+      width: 100%;
+      background: #4caf50;
+      transition: width 0.4s linear, background-color 0.4s linear;
+    }
+
+    .hp-bar.medium { background: #ff9800; }
+    .hp-bar.low { background: #f44336; }
+
+    .hp-block {
+      position: absolute;
+      width: 20%;
+      height: auto;
+    }
+
+
+    .hp-label {
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    #battle {
+      aspect-ratio: 16 / 9;
+
+      width: min(100vw, calc(100vh * (16 / 9)));
+      height: min(100vh, calc(100vw * (9 / 16)));
+
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: #000;
+    }
+
+   #battle-scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background: #000;
+    }
+
+  @media (orientation: portrait) {
+  #battle {
+    width: min(100vw, calc(100vh * (16 / 9)));
+    height: min(100vh, calc(100vw * (9 / 16)));
+    }
+  }
+
+  @media (orientation: landscape) {
+    #battle {
+      width: min(100vw, calc(100vh * (16 / 9)));
+      height: min(100vh, calc(100vw * (9 / 16)));
+    }
+  }
+
+    #battle-screen {
+      flex: 0 0 66.666%;
+      min-height: 0;
+    }
+
+    #battle-screen canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      image-rendering: pixelated; /* optional */
+    }
+
+
+    #battle-textbox {
+      flex: 0 0 33.333%;
+      min-height: 0;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+
+    .scene {
+      width: 100%;
+      height: 100%;
+    }
+
+  </style>
+    <script type="module" crossorigin src="/assets/index-D5bpaM4S.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-vh-t_kPv.css">
+  </head>
+  <body style="margin: 0; padding: 0">
+    <div id="map" class="scene" style="height: 400px;"></div>
+
+    <div id="preload" class="scene" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: #000; color: #fff; font-family: 'pokemon-gb'; font-size: 24px;">
+      Press Start...
+    </div>
+
+
+    <div id="battle-scene" class="scene" style="display: none;">
+      <div id="battle">
+
+        <div id="battle-screen">
+          <canvas id="myCanvas"></canvas>
+        </div>
+
+          <div class="hp-block" style="top: 20px">
+            <div class="hp-label">Enemy HP</div>
+            <div class="hp-container">
+              <div id="enemy-hp" class="hp-bar"></div>
+            </div>
+          </div>
+
+
+          <div class="hp-block" style="top: 50px">
+            <div class="hp-label">Your HP</div>
+            <div class="hp-container">
+              <div id="player-hp" class="hp-bar"></div>
+            </div>
+          </div>
+
+        <div id="battle-textbox">
+          <div id="dialogueBox" class="textbox">
+              <div class="textbox-text">
+                <p id="battleText"></p>
+              </div>
+              <div id="choices" class="choices"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+  </body>
+</html>

@@ -1,6 +1,10 @@
 import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
 
 
 class Pokemon {
@@ -259,7 +263,7 @@ class BattleStateMachine {
 
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js");
+  navigator.serviceWorker.register("/sw.js");
 }
 
 const enemySpriteData =
@@ -298,7 +302,7 @@ pkmn2.moves = [
 const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 const ctx = canvas?.getContext("2d");
 const battleBackgroundImage = new Image();
-battleBackgroundImage.src = './assets/battleBackgroundGrass.png';
+battleBackgroundImage.src = '/assets/battleBackgroundGrass.png';
 const BASE_WIDTH = 320;
 const BASE_HEIGHT = 180;
 
@@ -311,10 +315,10 @@ const dialogBox = document.getElementById("dialogueBox") as HTMLBaseElement;
 
 
 const enemyImage = new Image();
-enemyImage.src = './assets/sprites/1.png';
+enemyImage.src = '/assets/sprites/1.png';
 
 const playerImage = new Image();
-playerImage.src = './assets/sprites/back/18.png';
+playerImage.src = '/assets/sprites/back/18.png';
 
 const keys: Record<string, boolean> = {};
 window.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -457,6 +461,14 @@ const map = L.map("map").setView([51.505, -0.09], 13);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "&copy; OpenStreetMap contributors",
 }).addTo(map);
+
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+});
 
 // Add a marker
 const marker = L.marker([51.5, -0.09])
