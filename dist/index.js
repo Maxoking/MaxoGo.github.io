@@ -50,9 +50,19 @@ var Substate;
     Substate[Substate["IDLE"] = 0] = "IDLE";
     Substate[Substate["ANIMATING"] = 1] = "ANIMATING";
 })(Substate || (Substate = {}));
+class PreloadState extends BattleState {
+    enter() {
+        showScene("preload");
+    }
+    handleInput() {
+        if (keys[" "])
+            stateMachine.setState(new BattleStart);
+    }
+}
 class BattleStart extends BattleState {
     enter() {
         return __awaiter(this, void 0, void 0, function* () {
+            showScene("battle-scene");
             const battleText = document.getElementById("battleText");
             stateMachine.lockInput();
             yield stateMachine.typeText(battleText, `Ein wildes ${pkmn2.name} erscheint!`);
@@ -240,8 +250,6 @@ pkmn2.moves = [
     new Move("Glut", 60, "Feuer")
 ];
 const canvas = document.getElementById("myCanvas");
-// canvas.width = window.innerWidth;
-// canvas.height = window.innerHeight;
 const ctx = canvas === null || canvas === void 0 ? void 0 : canvas.getContext("2d");
 const battleBackgroundImage = new Image();
 battleBackgroundImage.src = './assets/battleBackgroundGrass.png';
@@ -278,7 +286,7 @@ window.addEventListener("touchend", (e) => {
 //   console.log("Canvas Position:", playerSpriteData.x, playerSpriteData.y);
 // });
 const stateMachine = new BattleStateMachine();
-stateMachine.setState(new BattleStart);
+stateMachine.setState(new PreloadState());
 const playerHpBar = document.getElementById("player-hp");
 const enemyHpBar = document.getElementById("enemy-hp");
 function updateBar(bar, value) {
@@ -332,6 +340,18 @@ Promise.all([
 ]).then(() => {
     draw();
 });
+function showScene(sceneId) {
+    const scenes = document.getElementsByClassName("scene");
+    Array.from(scenes).forEach(scene => {
+        const htmlElement = scene;
+        if (scene.id === sceneId) {
+            htmlElement.style.display = "flex";
+        }
+        else {
+            htmlElement.style.display = "none";
+        }
+    });
+}
 function draw() {
     ctx === null || ctx === void 0 ? void 0 : ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx === null || ctx === void 0 ? void 0 : ctx.drawImage(battleBackgroundImage, 0, 0, canvas.width, canvas.height);
@@ -344,4 +364,5 @@ function loop() {
     draw();
     requestAnimationFrame(loop);
 }
+showScene("preload");
 loop();

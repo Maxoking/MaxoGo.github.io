@@ -1,3 +1,5 @@
+
+
 class Pokemon {
     name: string;
     max_kp : number;
@@ -51,7 +53,6 @@ abstract class BattleState {
     enter() {}
     update() {}
     handleInput() {}
-
 }
 
 enum Substate {
@@ -59,9 +60,21 @@ enum Substate {
     ANIMATING
 }
 
+class PreloadState extends BattleState {
+    enter(): void {
+        showScene("preload");
+    }
+
+
+    handleInput(): void {
+            if (keys[" "]) stateMachine.setState(new BattleStart);
+    }
+}
+
 class BattleStart extends BattleState {
 
     async enter(): Promise<void> {
+        showScene("battle-scene");
         const battleText = document.getElementById("battleText") as HTMLParagraphElement;
         stateMachine.lockInput();
         await stateMachine.typeText(battleText, `Ein wildes ${pkmn2.name} erscheint!`);
@@ -280,8 +293,6 @@ pkmn2.moves = [
   
 
 const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
-// canvas.width = window.innerWidth;
-// canvas.height = window.innerHeight;
 const ctx = canvas?.getContext("2d");
 const battleBackgroundImage = new Image();
 battleBackgroundImage.src = './assets/battleBackgroundGrass.png';
@@ -334,7 +345,7 @@ window.addEventListener("touchend", (e: TouchEvent) => {
 
 
 const stateMachine = new BattleStateMachine();
-stateMachine.setState(new BattleStart);
+stateMachine.setState(new PreloadState());
 
 const playerHpBar = document.getElementById("player-hp") as HTMLDivElement;
 const enemyHpBar = document.getElementById("enemy-hp") as HTMLDivElement;
@@ -406,6 +417,19 @@ Promise.all([
     draw();
 });
 
+function showScene(sceneId: string) {
+    const scenes = document.getElementsByClassName("scene");
+
+    Array.from(scenes).forEach(scene => {
+        const htmlElement = scene as HTMLElement;
+        if (scene.id === sceneId) {
+            htmlElement.style.display = "flex";
+        } else {
+            htmlElement.style.display = "none";
+        }
+    });
+}
+
 
 
 function draw(): void {
@@ -422,7 +446,7 @@ function loop(): void {
   requestAnimationFrame(loop);
 }
 
-
+showScene("preload");
 loop();
 
 
