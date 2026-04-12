@@ -230,9 +230,9 @@ const playerSpriteData = {
 const pkmn1 = new Pokemon("Bisaflor", 100, 7, 6, 70);
 pkmn1.moves = [
     new Move("Tackle", 40, "Normal"),
-    new Move("Aquaknarre", 60, "Wasser"),
-    new Move("Rasierblatt", 55, "Pflanze"),
-    new Move("Solarstrahl", 120, "Pflanze")
+    new Move("Aquaknarre", 60, "Wasser")
+    // new Move("Rasierblatt", 55, "Pflanze"),
+    // new Move("Solarstrahl", 120, "Pflanze")
 ];
 const pkmn2 = new Pokemon("Glurak", 150, 9, 5, 100);
 pkmn2.moves = [
@@ -311,16 +311,19 @@ function scaleBattle() {
     const textbox = document.getElementById("battle-textbox");
     const textbox_height = battle.clientHeight / 3;
     const scale = Math.min(window.innerWidth / battle.clientWidth, window.innerHeight / battle.clientHeight);
-    //   battle.style.transform = `scale(${scale})`;
     textbox.style.height = `${textbox_height}px`;
-    //   const rect = canvas.getBoundingClientRect();
-    //   const dpr = window.devicePixelRatio || 1;
-    //   // 👉 Canvas echte Pixelgröße
-    //   canvas.width = rect.width * dpr;
-    //   canvas.height = rect.height * dpr;
 }
 // window.addEventListener("resize", scaleBattle);
 // scaleBattle();
+(() => __awaiter(void 0, void 0, void 0, function* () {
+    const res = yield fetch("https://pokeapi.co/api/v2/pokemon-habitat/forest");
+    const data = yield res.json();
+    // data.habitates.forEach((habitat: { name: string }) => {
+    //     console.log(habitat.name);
+    // });
+    console.log(data);
+    console.log(data.pokemon_species.length);
+}))();
 // Start once images load
 Promise.all([
     new Promise(res => battleBackgroundImage.onload = () => res()),
