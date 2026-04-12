@@ -2,7 +2,7 @@
   "name": "MaxoGo",
   "short_name": "MaxoGo",
   "display": "fullscreen",
-  "orientation": "landscape",
+  "orientation": "any",
   "start_url": "./index.html",
   "lang": "de",
   "dir": "ltr",
