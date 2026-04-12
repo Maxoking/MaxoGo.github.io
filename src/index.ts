@@ -268,7 +268,9 @@ const playerSpriteData =
 const pkmn1 = new Pokemon("Bisaflor", 100, 7, 6, 70);
 pkmn1.moves = [
     new Move("Tackle", 40, "Normal"),
-    new Move("Aquaknarre", 60, "Wasser")
+    new Move("Aquaknarre", 60, "Wasser"),
+    new Move("Rasierblatt", 55, "Pflanze"),
+    new Move("Solarstrahl", 120, "Pflanze")
 ];
 
 const pkmn2 = new Pokemon("Glurak", 150, 9, 5, 100);
@@ -296,7 +298,7 @@ const dialogBox = document.getElementById("dialogueBox") as HTMLBaseElement;
 
 
 const enemyImage = new Image();
-enemyImage.src = './assets/sprites/6.png';
+enemyImage.src = './assets/sprites/1.png';
 
 const playerImage = new Image();
 playerImage.src = './assets/sprites/back/18.png';
@@ -318,17 +320,17 @@ window.addEventListener("touchend", (e: TouchEvent) => {
   keys[" "] = false;
 });
 
-canvas.addEventListener("click", (e) => {
-  const rect = canvas.getBoundingClientRect();
+// canvas.addEventListener("click", (e) => {
+//   const rect = canvas.getBoundingClientRect();
 
-  const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-  const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+//   const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+//   const y = (e.clientY - rect.top) * (canvas.height / rect.height);
 
-  playerSpriteData.x = x -  playerSpriteData.xScale / 2;
-  playerSpriteData.y = y - playerSpriteData.yScale / 2;
+//   playerSpriteData.x = x -  playerSpriteData.xScale / 2;
+//   playerSpriteData.y = y - playerSpriteData.yScale / 2;
 
-  console.log("Canvas Position:", playerSpriteData.x, playerSpriteData.y);
-});
+//   console.log("Canvas Position:", playerSpriteData.x, playerSpriteData.y);
+// });
 
 
 
