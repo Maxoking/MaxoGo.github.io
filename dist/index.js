@@ -8,6 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+const L = require("leaflet");
+require("leaflet/dist/leaflet.css");
 class Pokemon {
     constructor(name, kp, atk, def, speed) {
         this.name = name;
@@ -52,7 +55,7 @@ var Substate;
 })(Substate || (Substate = {}));
 class PreloadState extends BattleState {
     enter() {
-        showScene("preload");
+        showScene("map");
     }
     handleInput() {
         if (keys[" "])
@@ -364,5 +367,15 @@ function loop() {
     draw();
     requestAnimationFrame(loop);
 }
-showScene("preload");
+showScene("map");
+const map = L.map("map").setView([51.505, -0.09], 13);
+// Add OpenStreetMap tiles
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors",
+}).addTo(map);
+// Add a marker
+const marker = L.marker([51.5, -0.09])
+    .addTo(map)
+    .bindPopup("Hello from Leaflet!")
+    .openPopup();
 loop();
