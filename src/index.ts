@@ -302,7 +302,7 @@ pkmn2.moves = [
 const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 const ctx = canvas?.getContext("2d");
 const battleBackgroundImage = new Image();
-battleBackgroundImage.src = '/assets/battleBackgroundGrass.png';
+battleBackgroundImage.src = './assets/battleBackgroundGrass.png';
 const BASE_WIDTH = 320;
 const BASE_HEIGHT = 180;
 
@@ -315,10 +315,10 @@ const dialogBox = document.getElementById("dialogueBox") as HTMLBaseElement;
 
 
 const enemyImage = new Image();
-enemyImage.src = '/assets/sprites/1.png';
+enemyImage.src = './assets/sprites/1.png';
 
 const playerImage = new Image();
-playerImage.src = '/assets/sprites/back/18.png';
+playerImage.src = './assets/sprites/back/18.png';
 
 const keys: Record<string, boolean> = {};
 window.addEventListener("keydown", (e: KeyboardEvent) => {

@@ -8,14 +8,14 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "/pokeball.png",
+      "src": "./pokeball.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
   "screenshots": [
     {
-      "src": "Screensho_pkmn.png",
+      "src": "./Screensho_pkmn.png",
       "sizes": "1766x881",
       "type": "image/png",
       "form_factor": "wide"
