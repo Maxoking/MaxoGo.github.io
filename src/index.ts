@@ -5,265 +5,15 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
+import { SceneHandler, MapScene } from "./SceneHandler";
+import { Pokemon, Move } from "./PokemonBattleEntity";
+import { BattleStateMachine, BattleStart } from "./battlestatemachine";
 
 
-class Pokemon {
-    name: string;
-    max_kp : number;
-    kp: number;
-    atk : number;
-    def : number;
-    speed : number;
-    pkmn_type!: string;
-    moves!: Move[];
-    
-    constructor(name : string, kp : number, atk : number, def : number, speed : number) {
-        this.name = name;
-        this.kp = kp;
-        this.max_kp = kp;
-        this.atk = atk;
-        this.def = def;
-        this.speed = speed;
-        this.moves = [
-                new Move("Tackle", 40, "Normal"),
-                new Move("Aquaknarre", 60, "Wasser")
-            ];
-    }
-
-    use_move(move : Move, targetPkmn : Pokemon) {
-        let dmg = move.power + this.atk - targetPkmn.def;
-        targetPkmn.kp = Math.max(targetPkmn.kp - dmg, 0);
-        console.log(targetPkmn.kp + "/" + targetPkmn.max_kp);
-    }
-
-    print() {
-        console.log("Log: " + this.name);
-        this.moves.forEach(element => {
-            console.log(element.name);
-        });
-    }
-}
-
-class Move {
-    name!: string;
-    power!: number;
-    pkmn_type!: string;
-
-    constructor(name : string, power : number, pkm_type : string) {
-        this.name = name;
-        this.power = power;
-        this.pkmn_type = pkm_type;
-    }
-}
-
-abstract class BattleState {
-    enter() {}
-    update() {}
-    handleInput() {}
-}
-
-enum Substate {
-    IDLE,
-    ANIMATING
-}
-
-class PreloadState extends BattleState {
-    enter(): void {
-        showScene("map");
-    }
-
-
-    handleInput(): void {
-            if (keys[" "]) stateMachine.setState(new BattleStart);
-    }
-}
-
-class BattleStart extends BattleState {
-
-    async enter(): Promise<void> {
-        showScene("battle-scene");
-        const battleText = document.getElementById("battleText") as HTMLParagraphElement;
-        stateMachine.lockInput();
-        await stateMachine.typeText(battleText, `Ein wildes ${pkmn2.name} erscheint!`);
-        stateMachine.unlockInput();
-    }
-
-    handleInput(): void {
-        if (keys[" "]) stateMachine.setState(new ChooseActionState);
-    }
-}
-
-class ChooseActionState extends BattleState {
-    async enter(): Promise<void> {
-        const battleText = document.getElementById("battleText") as HTMLParagraphElement;
-        stateMachine.lockInput();
-        await stateMachine.typeText(battleText,`Was wird ${pkmn1.name} tun?`);
-        stateMachine.unlockInput();
-        this.setActionChoices();
-    }
-
-    private setActionChoices() : void {
-        const choices = document.getElementById("choices");
-        if (!choices) return;
-
-        const fightBtn = document.createElement("button");
-        fightBtn?.addEventListener("click", () => {
-                choices.replaceChildren();
-                stateMachine.setState(new ChooseMovesState);
-            });
-        fightBtn.className = "choice";
-        fightBtn.textContent = "FIGHT";
-
-        choices.replaceChildren(fightBtn);
-    }
-}
-
-class ChooseMovesState extends BattleState {
-    enter() : void {
-        this.setChoices(pkmn1.moves);
-    }
-
-    private setChoices(moves: Move[]) {
-        const choices = document.getElementById("choices");
-        if (!choices) return;
-
-        choices.replaceChildren(
-            ...moves.map(move => {
-            const div = document.createElement("button");
-            div?.addEventListener("click", () => {
-                    choices.replaceChildren();
-                    stateMachine.setState(new ProcessMovesState(move));
-                });
-            div.className = "choice";
-            div.textContent = move.name;
-                return div;
-            })
-        );
-    } 
-}
-
-class ProcessMovesState extends BattleState {
-        private enemyMove! : Move;
-        private playerMove! : Move;
-        private firstMove! : Move;
-        private lastMove! : Move;
-        private firstPokemon! : Pokemon;
-        private lastPokemon! : Pokemon;
-
-        private movesFinished : boolean = false;
-        private substate : Substate = Substate.IDLE;
-
-    constructor(playerMove : Move) {
-        super();
-        this.playerMove = playerMove;
-    };
-
-    async enter(): Promise<void> {
-       
-        this.determineEnemyMove();
-        this.determineMoveOrder();
-
-        const battleText = document.getElementById("battleText") as HTMLParagraphElement;
-        stateMachine.lockInput();
-        await stateMachine.typeText(battleText, `${this.firstPokemon.name} setzt ${this.firstMove.name} ein!`);
-        stateMachine.unlockInput();
-        this.substate = Substate.ANIMATING;
-    }
-
-    async handleInput(): Promise<void> {
-        if (keys[" "]) {
-            const battleText = document.getElementById("battleText") as HTMLParagraphElement;
-            if( (!this.movesFinished) && (this.substate === Substate.ANIMATING)) {
-                stateMachine.lockInput();
-                this.firstPokemon.use_move(this.firstMove, this.lastPokemon);
-                await setPlayerHP((this.lastPokemon.kp / this.lastPokemon.max_kp) * 100);
-                stateMachine.unlockInput();
-                this.substate = Substate.IDLE;
-            } else if( (!this.movesFinished) && (this.substate === Substate.IDLE) ) {
-                stateMachine.lockInput();
-                await stateMachine.typeText(battleText, `${this.lastPokemon.name} setzt ${this.lastMove.name} ein!`);
-                stateMachine.unlockInput();
-                this.substate = Substate.ANIMATING;
-                this.movesFinished = true;
-            } else if( (this.movesFinished) && (this.substate === Substate.ANIMATING) ) {
-                stateMachine.lockInput();
-                this.lastPokemon.use_move(this.lastMove, this.firstPokemon);
-                await setEnemyHP((this.firstPokemon.kp / this.firstPokemon.max_kp) * 100);
-                stateMachine.unlockInput();
-                this.substate = Substate.IDLE;
-            } else {
-                stateMachine.setState(new ChooseActionState);
-            }
-
-        }
-    }
-
-    private determineEnemyMove() {
-        this.enemyMove = pkmn2.moves[0];
-    }
-
-    private determineMoveOrder() {
-        if (pkmn1.speed >= pkmn2.speed) {
-            this.firstMove = this.playerMove;
-            this.lastMove = this.enemyMove;
-            this.firstPokemon = pkmn1;
-            this.lastPokemon = pkmn2;
-        } else {
-            this.firstMove = this.enemyMove;
-            this.lastMove = this.playerMove;
-            this.firstPokemon = pkmn2;
-            this.lastPokemon = pkmn1;
-        }
-    }
-}
-
-class BattleStateMachine {
-    private state! : BattleState;
-    private inputLock : boolean = false;
-    private textSpeed : number = 40;
-
-    setState(state: BattleState) {
-        this.state = state;
-        state.enter()
-    }
-
-    update() {
-        this.state.update();
-    }
-
-    handleInput() {
-        if(!this.inputLock) this.state.handleInput();
-    }
-
-    lockInput() {
-        this.inputLock = true;
-    }
-
-    unlockInput() {
-        this.inputLock = false;
-    }
-
-    typeText(
-        element: HTMLElement,
-        text: string
-    ): Promise<void> {
-    return new Promise(resolve => {
-        element.textContent = "";
-        let i = 0;
-        const interval = setInterval(() => {
-        element.textContent += text[i++];
-        if (i >= text.length) {
-            clearInterval(interval);
-            resolve();
-        }
-        }, this.textSpeed);
-    });
-}
-}
 
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js");
+  navigator.serviceWorker.register("./sw.js");
 }
 
 const enemySpriteData =
@@ -323,18 +73,22 @@ playerImage.src = './assets/sprites/back/18.png';
 const keys: Record<string, boolean> = {};
 window.addEventListener("keydown", (e: KeyboardEvent) => {
   keys[e.key] = true;
+  SceneHandler.getInstance().handleInput(keys);
 });
 
 window.addEventListener("keyup", (e: KeyboardEvent) => {
   keys[e.key] = false;
+  SceneHandler.getInstance().handleInput(keys);
 });
 
 window.addEventListener("touchstart", (e: TouchEvent) => {
   keys[" "] = true;
+  SceneHandler.getInstance().handleInput(keys);
 });
 
 window.addEventListener("touchend", (e: TouchEvent) => {
   keys[" "] = false;
+  SceneHandler.getInstance().handleInput(keys);
 });
 
 // canvas.addEventListener("click", (e) => {
@@ -351,36 +105,13 @@ window.addEventListener("touchend", (e: TouchEvent) => {
 
 
 
-const stateMachine = new BattleStateMachine();
-stateMachine.setState(new PreloadState());
+// const stateMachine = new BattleStateMachine(pkmn1, pkmn2);
+// stateMachine.setState(new BattleStart());
 
 const playerHpBar = document.getElementById("player-hp") as HTMLDivElement;
 const enemyHpBar = document.getElementById("enemy-hp") as HTMLDivElement;
 
 
-function updateBar(bar: HTMLDivElement, value: number) : Promise<void> {
-  return new Promise(resolve => {
-    const onEnd = (e: TransitionEvent) => {
-      if (e.propertyName === "width") {
-        bar.removeEventListener("transitionend", onEnd);
-        resolve();
-      }
-    };
-
-    bar.addEventListener("transitionend", onEnd);
-
-    // trigger Animation
-    bar.style.width = value + "%";
-  });
-}
-
-async function setPlayerHP(value: number) {
-  await updateBar(playerHpBar, value);
-}
-
-async function setEnemyHP(value: number) {
-  await updateBar(enemyHpBar, value);
-}
 
 function scaleBattle() {
   const baseWidth = 1280;
@@ -415,6 +146,17 @@ function scaleBattle() {
     console.log(data.pokemon_species.length);
 })();
 
+(async () => {
+    const res = await fetch("https://pokeapi.co/api/v2/pokemon/charizard");
+    const data = await res.json();
+    // data.habitates.forEach((habitat: { name: string }) => {
+    //     console.log(habitat.name);
+        
+    // });
+    console.log(data);
+    console.log(data.moves.length);
+})();
+
 // Start once images load
 Promise.all([
   new Promise<void>(res => battleBackgroundImage.onload = () => res()),
@@ -423,20 +165,6 @@ Promise.all([
 ]).then(() =>{
     draw();
 });
-
-function showScene(sceneId: string) {
-    const scenes = document.getElementsByClassName("scene");
-
-    Array.from(scenes).forEach(scene => {
-        const htmlElement = scene as HTMLElement;
-        if (scene.id === sceneId) {
-            htmlElement.style.display = "flex";
-        } else {
-            htmlElement.style.display = "none";
-        }
-    });
-}
-
 
 
 function draw(): void {
@@ -447,34 +175,15 @@ function draw(): void {
 }
 
 function loop(): void {
-  stateMachine.handleInput();  
-  stateMachine.update();
+  //scene_handler.handleInput(keys);  
+  SceneHandler.getInstance().update();
   draw();
   requestAnimationFrame(loop);
 }
 
-showScene("map");
 
-const map = L.map("map").setView([51.505, -0.09], 13);
 
-// Add OpenStreetMap tiles
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "&copy; OpenStreetMap contributors",
-}).addTo(map);
-
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-
-L.Icon.Default.mergeOptions({
-  iconUrl: markerIcon,
-  iconRetinaUrl: markerIcon2x,
-  shadowUrl: markerShadow,
-});
-
-// Add a marker
-const marker = L.marker([51.5, -0.09])
-  .addTo(map)
-  .bindPopup("Hello from Leaflet!")
-  .openPopup();
+SceneHandler.getInstance().showScene(new MapScene());
 loop();
 
 

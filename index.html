@@ -109,7 +109,7 @@
     .choice::before {
       line-height: 1;
       position: absolute;
-      content: "▶";
+      content: "-";
       left: 0px;
       opacity: 0;
       transition: opacity 0.15s ease;
@@ -213,6 +213,7 @@
       top: 0;
       bottom: 0;
       width: 100%;
+      height: 100%;
     }
 
     .scene {
@@ -223,7 +224,7 @@
   </style>
   </head>
   <body style="margin: 0; padding: 0">
-    <div id="map" class="scene" style="height: 400px;"></div>
+    <div id="map" class="scene"></div>
 
     <div id="preload" class="scene" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: #000; color: #fff; font-family: 'pokemon-gb'; font-size: 24px;">
       Press Start...

@@ -10,7 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@types/geojson": "^7946.0.16",
@@ -18,6 +19,7 @@
     "leaflet": "^1.9.4"
   },
   "devDependencies": {
+    "gh-pages": "^6.3.0",
     "vite": "^8.0.8"
   }
 }
