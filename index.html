@@ -124,22 +124,30 @@
       width: 100%;
       height: 50%;
       background: #eaeaea;
-      border: 3px solid #3a3a3a;
-      border-radius: 4px;
-      padding: 2px;
-      margin-bottom: 8px;
+      border: 0.3vw solid #3a3a3a;
+      border-radius: 0.4px;
+      padding: 0.3vw;
     }
 
 
     .hp-bar {
-      height: 14px;
+      height: 1vw;
       width: 100%;
       background: #4caf50;
+      margin-bottom: 0.2vw;
+      margin-top: 0.2vw;
       transition: width 0.4s linear, background-color 0.4s linear;
     }
 
     .hp-bar.medium { background: #ff9800; }
     .hp-bar.low { background: #f44336; }
+
+    .xp-bar {
+      height: 0.4vw;
+      width: 0%;
+      background: #2196f3;
+      transition: width 0.4s linear
+    }
 
     .hp-block {
       position: absolute;
@@ -149,9 +157,9 @@
 
 
     .hp-label {
-      font-size: 12px;
+      font-size: 1vw;
       font-weight: bold;
-      margin-bottom: 2px;
+      font-family: 'pokemon-gb';
     }
 
     #battle {
@@ -222,7 +230,7 @@
     }
 
   </style>
-    <script type="module" crossorigin src="/MaxoGo.github.io/assets/index-1a8lu2s-.js"></script>
+    <script type="module" crossorigin src="/MaxoGo.github.io/assets/index-Cg4YPB61.js"></script>
     <link rel="stylesheet" crossorigin href="/MaxoGo.github.io/assets/index-vh-t_kPv.css">
   </head>
   <body style="margin: 0; padding: 0">
@@ -236,8 +244,19 @@
     <div id="battle-scene" class="scene" style="display: none;">
       <div id="battle">
 
-        <div id="battle-screen">
+        <div id="battle-screen" style="position: relative;">
           <canvas id="myCanvas"></canvas>
+
+          <div class="hp-block" style="bottom: 5%; left: 60%;">
+            <div class="hp-container">
+              <horizontal style="display: flex; align-items: center; justify-content: space-between;">  
+                <div id="player-name" class="hp-label">Your Pokemon</div>
+                <div id="player-level" class="hp-label">Lv5</div>
+              </horizontal>
+              <div id="player-hp" class="hp-bar"></div>
+              <div id="player-xp" class="xp-bar"></div>
+            </div>
+          </div>
         </div>
 
           <div class="hp-block" style="top: 20px">
@@ -248,12 +267,7 @@
           </div>
 
 
-          <div class="hp-block" style="top: 50px">
-            <div class="hp-label">Your HP</div>
-            <div class="hp-container">
-              <div id="player-hp" class="hp-bar"></div>
-            </div>
-          </div>
+
 
         <div id="battle-textbox">
           <div id="dialogueBox" class="textbox">
