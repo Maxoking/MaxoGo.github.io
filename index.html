@@ -243,8 +243,8 @@
     <div id="preload" class="scene" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: #000; color: #fff; font-family: 'pokemon-gb'; font-size: 24px;">
       <!-- Press Start... -->
       <a-scene
-        webxr="requiredFeatures: hit-test;"
-        xr-mode-ui="XRMode: xr">
+         xr-mode-ui="XRMode: xr"
+          webxr="requiredFeatures: hit-test, local-floor">
 
       <a-box
         position="0 0 -2"
@@ -253,6 +253,7 @@
 
       <a-camera></a-camera>
     </a-scene>
+    </div>
 
 
     <div id="battle-scene" class="scene" style="display: none;">
@@ -283,19 +284,6 @@
           </div>
 
         </div> <!-- Battle Screen -->
-
-          <!-- <div class="hp-block" style="top: 20px">
-            <div class="hp-container">
-              <horizontal style="display: flex; align-items: center; justify-content: space-between;">  
-                <div id="enemy-name" class="hp-label">Enemy Pokemon</div>
-                <div id="enemy-level" class="hp-label">Lv5</div>
-              </horizontal>
-              <div id="enemy-hp" class="hp-bar"></div>
-            </div>
-          </div> -->
-
-
-
 
         <div id="battle-textbox">
           <div id="dialogueBox" class="textbox">
