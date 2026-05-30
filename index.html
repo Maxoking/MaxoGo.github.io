@@ -243,13 +243,9 @@
     <div id="preload" class="scene" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: #000; color: #fff; font-family: 'pokemon-gb'; font-size: 24px;">
       <!-- Press Start... -->
       <a-scene
-        xr-mode-ui="enabled: true"
+        xr-mode-ui="XRMode: xr"
         webxr="requiredFeatures: hit-test, local-floor">
 
-      <a-box
-        position="0 0 -2"
-        color="red">
-      </a-box>
 
       <a-assets>
         <img id="pokemon" src="assets/sprites/3.png">
@@ -264,6 +260,15 @@
       </a-plane>
 
       <a-camera></a-camera>
+
+        <!-- <div id="battle-textbox">
+          <div id="dialogueBox" class="textbox">
+              <div class="textbox-text">
+                <p id="battleText">HALLO</p>
+              </div>
+              <div id="choices" class="choices"></div>
+          </div>
+        </div> -->
     </a-scene>
     </div>
 
