@@ -243,6 +243,7 @@
     <div id="preload" class="scene" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: #000; color: #fff; font-family: 'pokemon-gb'; font-size: 24px;">
       <!-- Press Start... -->
       <a-scene
+        xr-mode-ui="enabled: true"
         webxr="requiredFeatures: hit-test, local-floor">
 
       <a-box
@@ -259,8 +260,7 @@
         transparent="true"
         width="1"
         height="1"
-        position="0 1 -2"
-        look-at="[camera]">
+        position="0 1 -2">
       </a-plane>
 
       <a-camera></a-camera>
