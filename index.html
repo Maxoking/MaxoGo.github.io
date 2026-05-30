@@ -242,11 +242,17 @@
 
     <div id="preload" class="scene" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: #000; color: #fff; font-family: 'pokemon-gb'; font-size: 24px;">
       <!-- Press Start... -->
-      <a-scene>
-        <a-box position="0 1.5 -3"></a-box>
-        <a-camera></a-camera>
-      </a-scene>
-    </div>
+      <a-scene
+        webxr="requiredFeatures: hit-test;"
+        xr-mode-ui="XRMode: xr">
+
+      <a-box
+        position="0 0 -2"
+        color="red">
+      </a-box>
+
+      <a-camera></a-camera>
+    </a-scene>
 
 
     <div id="battle-scene" class="scene" style="display: none;">
