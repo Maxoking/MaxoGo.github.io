@@ -9,6 +9,8 @@
     <meta name="apple-mobile-web-app-title" content="MaxoGo">
     <meta name="msapplication-starturl" content="/index.html">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
 
 
 
@@ -239,7 +241,11 @@
     <div id="map" class="scene"></div>
 
     <div id="preload" class="scene" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: #000; color: #fff; font-family: 'pokemon-gb'; font-size: 24px;">
-      Press Start...
+      <!-- Press Start... -->
+      <a-scene>
+        <a-box position="0 1.5 -3"></a-box>
+        <a-camera></a-camera>
+      </a-scene>
     </div>
 
 
