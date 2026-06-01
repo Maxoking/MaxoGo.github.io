@@ -234,7 +234,7 @@
     }
 
   </style>
-    <script type="module" crossorigin src="/MaxoGo.github.io/assets/index-2cNjjtYe.js"></script>
+    <script type="module" crossorigin src="/MaxoGo.github.io/assets/index-DT52PrTc.js"></script>
     <link rel="stylesheet" crossorigin href="/MaxoGo.github.io/assets/index-vh-t_kPv.css">
   </head>
   <body style="margin: 0; padding: 0">
@@ -285,9 +285,20 @@
         }
       });
     </script>
+
+
+    <div id="battle-vr-ui">
+      <div id="dialogueBox" class="textbox" style="display: none;">
+        <div class="textbox-text">
+          <p id="battleText">HALLO</p>
+        </div>
+        <div id="choices" class="choices"></div>
+      </div>
+    </div>
+    
     <a-scene id="battle-scene-vr" class="scene"
         xr-mode-ui="XRMode: ar"
-        webxr="requiredFeatures: hit-test" style="background: #000" floor-detector>
+        webxr="requiredFeatures: hit-test" style="background: #000">
 
 
       <a-assets>
@@ -326,16 +337,9 @@
       </a-plane>
 
       <a-camera></a-camera>
-
-        <!-- <div id="battle-textbox">
-          <div id="dialogueBox" class="textbox">
-              <div class="textbox-text">
-                <p id="battleText">HALLO</p>
-              </div>
-              <div id="choices" class="choices"></div>
-          </div>
-        </div> -->
     </a-scene>
+
+
 
 
     <div id="battle-scene" class="scene" style="display: none;">
