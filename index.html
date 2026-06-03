@@ -297,7 +297,8 @@
     </div>
     
     <a-scene id="battle-scene-vr" class="scene"
-        xr-mode-ui="XRMode: ar"
+        xr-mode-ui="enabled: true; ARButton: true"
+        webxr="requiredFeatures: hit-test"
         style="background: #000">
 
 
@@ -338,6 +339,33 @@
 
       <a-camera></a-camera>
     </a-scene>
+
+    <script>
+      const scene = document.querySelector("a-scene");
+
+      scene.addEventListener("loaded", () => {
+        console.log("A-Frame Szene geladen!");
+        const xr = scene.renderer.xr;
+
+          scene.addEventListener("enter-vr", () => {
+          console.log("ENTER VR fired");
+
+          setTimeout(() => {
+            console.log("XR session:", scene.renderer?.xr?.getSession());
+          }, 1000);
+        });
+
+        xr.addEventListener("sessionstart", () => {
+          console.log("AR Session gestartet!");
+          const session = xr.getSession();
+          console.log("Session:", session);
+        });
+
+        xr.addEventListener("sessionend", () => {
+          console.log("AR Session beendet");
+        });
+      });
+    </script>
 
 
 
