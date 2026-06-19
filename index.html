@@ -235,7 +235,7 @@
     }
 
   </style>
-    <script type="module" crossorigin src="/MaxoGo.github.io/assets/index-BMi_KkHh.js"></script>
+    <script type="module" crossorigin src="/MaxoGo.github.io/assets/index-DS2Upyrq.js"></script>
     <link rel="stylesheet" crossorigin href="/MaxoGo.github.io/assets/index-vh-t_kPv.css">
   </head>
   <body style="margin: 0; padding: 0">
@@ -295,7 +295,6 @@
 
       // Create a render loop that allows us to draw on the AR view.
       const onXRFrame = (time, frame) => {
-        console.log("XR Frame", time, frame);
         // Queue up the next draw request.
         session.requestAnimationFrame(onXRFrame);
 
@@ -306,6 +305,7 @@
         // XRFrame.getViewerPose can return null while the session attempts to establish tracking.
         const pose = frame.getViewerPose(referenceSpace);
         if (pose) {
+          console.log("Pose:", pose);
           // In mobile AR, we only have one view.
           const view = pose.views[0];
 
