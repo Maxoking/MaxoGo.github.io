@@ -272,6 +272,13 @@
               const box = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), materials);
               box.position.set(i - HALF, j - HALF, k - HALF);
               box.position.multiplyScalar(SPREAD);
+              const geometry = new THREE.PlaneGeometry( 1, 1 );
+              const material = new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } );
+              const plane = new THREE.Mesh( geometry, material );
+              plane.position.set(i - HALF, j - HALF, k - HALF);
+              plane.position.multiplyScalar(SPREAD);
+              scene.add( plane );
+
               scene.add(box);
             }
           }
