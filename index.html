@@ -10,7 +10,8 @@
     <meta name="msapplication-starturl" content="/index.html">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
-    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <!-- <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script> -->
+    <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
 
 
 
@@ -234,18 +235,101 @@
     }
 
   </style>
-    <script type="module" crossorigin src="/MaxoGo.github.io/assets/index-DT52PrTc.js"></script>
+    <script type="module" crossorigin src="/MaxoGo.github.io/assets/index-sddFctRO.js"></script>
     <link rel="stylesheet" crossorigin href="/MaxoGo.github.io/assets/index-vh-t_kPv.css">
   </head>
   <body style="margin: 0; padding: 0">
-    <div id="map" class="scene"></div>
-
-    <div id="preload" class="scene" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: #000; color: #fff; font-family: 'pokemon-gb'; font-size: 24px;">
-      <!-- Press Start... -->
-      
-    </div>
-
+    <!-- <div id="map" class="scene"></div> -->
+    <button onclick="activateXR()">Start Hello WebXR</button>
     <script>
+    async function activateXR() {
+      // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
+      console.log("Activating WebXR...");
+
+      const canvas = document.createElement("canvas");
+      document.body.appendChild(canvas);
+      const gl = canvas.getContext("webgl", {xrCompatible: true});
+
+      // To be continued in upcoming steps.
+      const scene = new THREE.Scene();
+
+      // The cube will have a different color on each side.
+      const materials = [
+        new THREE.MeshBasicMaterial({color: 0xff0000}),
+        new THREE.MeshBasicMaterial({color: 0x0000ff}),
+        new THREE.MeshBasicMaterial({color: 0x00ff00}),
+        new THREE.MeshBasicMaterial({color: 0xff00ff}),
+        new THREE.MeshBasicMaterial({color: 0x00ffff}),
+        new THREE.MeshBasicMaterial({color: 0xffff00})
+      ];
+
+      // Create the cube and add it to the demo scene.
+      const cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), materials);
+      cube.position.set(1, 1, 1);
+      scene.add(cube);
+
+      // Set up the WebGLRenderer, which handles rendering to the session's base layer.
+      const renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        preserveDrawingBuffer: true,
+        canvas: canvas,
+        context: gl
+      });
+      renderer.autoClear = false;
+
+      // The API directly updates the camera matrices.
+      // Disable matrix auto updates so three.js doesn't attempt
+      // to handle the matrices independently.
+      const camera = new THREE.PerspectiveCamera();
+      camera.matrixAutoUpdate = false;
+
+      // Initialize a WebXR session using "immersive-ar".
+      const session = await navigator.xr.requestSession("immersive-ar");
+      session.updateRenderState({
+        baseLayer: new XRWebGLLayer(session, gl)
+      });
+
+      // A 'local' reference space has a native origin that is located
+      // near the viewer's position at the time the session was created.
+      const referenceSpace = await session.requestReferenceSpace('local');
+
+      // Create a render loop that allows us to draw on the AR view.
+      const onXRFrame = (time, frame) => {
+        // Queue up the next draw request.
+        session.requestAnimationFrame(onXRFrame);
+
+        // Bind the graphics framebuffer to the baseLayer's framebuffer
+        gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer)
+
+        // Retrieve the pose of the device.
+        // XRFrame.getViewerPose can return null while the session attempts to establish tracking.
+        const pose = frame.getViewerPose(referenceSpace);
+        if (pose) {
+          // In mobile AR, we only have one view.
+          const view = pose.views[0];
+
+          const viewport = session.renderState.baseLayer.getViewport(view);
+          renderer.setSize(viewport.width, viewport.height)
+
+          // Use the view's transform matrix and projection matrix to configure the THREE.camera.
+          camera.matrix.fromArray(view.transform.matrix)
+          camera.projectionMatrix.fromArray(view.projectionMatrix);
+          camera.updateMatrixWorld(true);
+
+          // Render the scene with THREE.WebGLRenderer.
+          renderer.render(scene, camera)
+        }
+      }
+      session.requestAnimationFrame(onXRFrame);
+    }
+    </script>
+
+
+    <!-- <div id="preload" class="scene" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: #000; color: #fff; font-family: 'pokemon-gb'; font-size: 24px;">
+      
+    </div> -->
+
+    <!-- <script>
       AFRAME.registerComponent("floor-detector", {
         init() {
           this.reticle = document.querySelector("#reticle");
@@ -284,11 +368,44 @@
           }
         }
       });
-    </script>
+    </script> -->
+
+
+    <!-- <script>
+    AFRAME.registerComponent("spawn-on-tap", {
+      init() {
+        this.reticle = document.querySelector("#reticle");
+
+        this.el.sceneEl.canvas.addEventListener("click", () => {
+          console.log("SPAWN clicked!");
+
+          if (!this.reticle.object3D.visible) return;
+
+          const pos = this.reticle.object3D.position.clone();
+
+          const pokemon = document.createElement("a-plane");
+          pokemon.setAttribute("src", "#pokemon");
+          pokemon.setAttribute("transparent", true);
+          pokemon.setAttribute("width", 1);
+          pokemon.setAttribute("height", 1);
+
+          pokemon.setAttribute("position", {
+            x: pos.x,
+            y: pos.y,
+            z: pos.z
+          });
+
+          pokemon.setAttribute("billboard", "");
+
+          this.el.sceneEl.appendChild(pokemon);
+        });
+      }
+    });
+    </script> -->
 
 
     <div id="battle-vr-ui">
-      <div id="dialogueBox" class="textbox" style="display: none;">
+      <div id="dialogueBox" class="textbox" style="display: block;">
         <div class="textbox-text">
           <p id="battleText">HALLO</p>
         </div>
@@ -296,10 +413,11 @@
       </div>
     </div>
     
-    <a-scene id="battle-scene-vr" class="scene"
-        xr-mode-ui="enabled: true; ARButton: true"
-        webxr="requiredFeatures: hit-test"
-        style="background: #000">
+    <!-- <a-scene id="battle-scene-vr" class="scene"
+        xr-mode-ui="XRMode: ar;"
+        webxr="optionalFeatures:  hit-test;"
+        style="background: #000"
+        floor-detector spawn-on-tap>
 
 
       <a-assets>
@@ -325,10 +443,11 @@
         radius-inner="0.05"
         radius-outer="0.07"
         color="yellow"
+        rotation="-90 0 0"
         visible="false">
       </a-ring>
 
-      <a-plane
+      <a-plane id="pokemon_sprite"
         src="#pokemon"
         transparent="true"
         width="1"
@@ -338,13 +457,13 @@
       </a-plane>
 
       <a-camera></a-camera>
-    </a-scene>
+    </a-scene> -->
 
-    <script>
+    <!-- <script>
       const scene = document.querySelector("a-scene");
 
       scene.addEventListener("loaded", () => {
-        console.log("A-Frame Szene geladen!");
+        console.log("A-Frame Szene geladen! JAJAJA");
         const xr = scene.renderer.xr;
 
           scene.addEventListener("enter-vr", () => {
@@ -365,10 +484,13 @@
           console.log("AR Session beendet");
         });
       });
-    </script>
+    </script> -->
+
+ 
 
 
 
+    <div id="debug" style="position:fixed;top:0;left:0;color:white;z-index:9999;"></div>
 
     <div id="battle-scene" class="scene" style="display: none;">
       <div id="battle">
