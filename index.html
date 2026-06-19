@@ -269,17 +269,18 @@
         for (let i = 0; i < ROW_COUNT; i++) {
           for (let j = 0; j < ROW_COUNT; j++) {
             for (let k = 0; k < ROW_COUNT; k++) {
-              const box = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), materials);
-              box.position.set(i - HALF, j - HALF, k - HALF);
-              box.position.multiplyScalar(SPREAD);
-              const geometry = new THREE.PlaneGeometry( 1, 1 );
+              // const box = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), materials);
+              // box.position.set(i - HALF, j - HALF, k - HALF);
+              // box.position.multiplyScalar(SPREAD);
+              // scene.add(box);
+
+              const geometry = new THREE.PlaneGeometry( 0.1, 0.1 );
               const material = new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } );
               const plane = new THREE.Mesh( geometry, material );
               plane.position.set(i - HALF, j - HALF, k - HALF);
               plane.position.multiplyScalar(SPREAD);
               scene.add( plane );
 
-              scene.add(box);
             }
           }
         }
