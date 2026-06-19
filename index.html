@@ -235,7 +235,7 @@
     }
 
   </style>
-    <script type="module" crossorigin src="/MaxoGo.github.io/assets/index-CwXDhV8C.js"></script>
+    <script type="module" crossorigin src="/MaxoGo.github.io/assets/index-BMi_KkHh.js"></script>
     <link rel="stylesheet" crossorigin href="/MaxoGo.github.io/assets/index-vh-t_kPv.css">
   </head>
   <body style="margin: 0; padding: 0">
@@ -284,14 +284,14 @@
       camera.matrixAutoUpdate = false;
 
       // Initialize a WebXR session using "immersive-ar".
-      const session = await navigator.xr.requestSession('inline');
+      const session = await navigator.xr.requestSession('immersive-ar');
       session.updateRenderState({
         baseLayer: new XRWebGLLayer(session, gl)
       });
 
       // A 'local' reference space has a native origin that is located
       // near the viewer's position at the time the session was created.
-      const referenceSpace = await session.requestReferenceSpace('viewer');
+      const referenceSpace = await session.requestReferenceSpace('local');
 
       // Create a render loop that allows us to draw on the AR view.
       const onXRFrame = (time, frame) => {
