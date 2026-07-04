@@ -64,6 +64,18 @@
       border-image-repeat: stretch;  /* oder repeat / round */
     }
 
+    .textbox-text-vr {
+      overflow: hidden;       
+      /* height: 100%; */
+      display: flex;
+
+      /* align-items: center; */
+      border: 4vw solid transparent;
+      border-image-source: url("./assets/choices_background.png");
+      border-image-slice: 7;        /* wie weit vom Rand geschnitten wird */
+      border-image-repeat: stretch;  /* oder repeat / round */
+    }
+
     .textbox-text p {
       margin-left: 2vw;
       line-height: 1.5;
@@ -80,6 +92,21 @@
       font-family: 'pokemon-gb';
 
       border: 2vw solid transparent;
+      border-image-source: url("./assets/choices_background.png");
+      border-image-slice: 7;        /* wie weit vom Rand geschnitten wird */
+      border-image-repeat: stretch;  /* oder repeat / round */
+    }
+
+    .choices-vr {
+      min-height: 0;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      /* gap: 6px; */
+      align-content: top;
+      font-family: 'pokemon-gb';
+
+      border: 4vw solid transparent;
       border-image-source: url("./assets/choices_background.png");
       border-image-slice: 7;        /* wie weit vom Rand geschnitten wird */
       border-image-repeat: stretch;  /* oder repeat / round */
@@ -153,6 +180,7 @@
       width: 20%;
       height: auto;
     }
+    
 
 
     .hp-label {
@@ -241,24 +269,24 @@
       <!-- <button onclick="activateXR()">Start Hello WebXR</button> -->
       <!-- <button id="ar-button">Start AR</button> -->
 
-        <div class="hp-block" style="bottom: 25%; left: 60%;">
-              <div class="hp-container">
+        <div class="hp-block" style="bottom: 25%; left: 55%; width: 35%;">
+              <div class="hp-container" style="height: 5vw">
                 <horizontal style="display: flex; align-items: center; justify-content: space-between;">  
-                  <div id="player-name-vr" class="hp-label">Your Pokemon</div>
-                  <div id="player-level-vr" class="hp-label">Lv5</div>
+                  <div id="player-name-vr" class="hp-label" style="font-size: 2vw;">Your Pokemon</div>
+                  <div id="player-level-vr" class="hp-label" style="font-size: 2vw;">Lv5</div>
                 </horizontal>
-                <div id="player-hp-vr" class="hp-bar"></div>
+                <div id="player-hp-vr" class="hp-bar" style="height: 2vw;"></div>
                 <div id="player-xp-vr" class="xp-bar"></div>
               </div>
             </div>
 
-            <div class="hp-block" style="left: 5%; top: 10%;">
-              <div class="hp-container">
+            <div class="hp-block" style="left: 5%; top: 10%; width: 35%;">
+              <div class="hp-container" style="height: 5vw">
                 <horizontal style="display: flex; align-items: center; justify-content: space-between;">  
-                  <div id="enemy-name-vr" class="hp-label">Enemy Pokemon</div>
-                  <div id="enemy-level-vr" class="hp-label">Lv5</div>
+                  <div id="enemy-name-vr" class="hp-label" style="font-size: 2vw;">Enemy Pokemon</div>
+                  <div id="enemy-level-vr" class="hp-label" style="font-size: 2vw;">Lv5</div>
                 </horizontal>
-                <div id="enemy-hp-vr" class="hp-bar"></div>
+                <div id="enemy-hp-vr" class="hp-bar" style="height: 2vw;"></div>
               </div>
             </div>
 
