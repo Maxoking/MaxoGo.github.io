@@ -1,0 +1,165 @@
+{
+  "version": 8,
+  "name": "Retro RPG World - OpenFreeMap",
+  "metadata": {"maputnik:renderer": "mlgljs"},
+  "sources": {
+    "openmaptiles": {
+      "type": "vector",
+      "url": "https://tiles.openfreemap.org/planet"
+    }
+  },
+  "sprite": "https://demotiles.maplibre.org/styles/osm-bright-gl-style/sprite",
+  "glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "layout": {"visibility": "visible"},
+      "paint": {"background-color": "#c8d88a"}
+    },
+    {
+      "id": "landcover",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "layout": {"visibility": "none"},
+      "paint": {"fill-color": "#a8c76f"}
+    },
+    {
+      "id": "grass",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "filter": ["all", ["==", "class", "grass"]],
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(135, 193, 82, 1)"}
+    },
+    {
+      "id": "farmland",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "filter": ["all", ["==", "class", "farmland"]],
+      "paint": {"fill-color": "rgba(142, 208, 83, 1)"}
+    },
+    {
+      "id": "forest",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "filter": ["all", ["==", "class", "wood"]],
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "#5fa044"}
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "filter": ["all"],
+      "paint": {
+        "fill-color": "#4aa3d8",
+        "fill-translate-anchor": "map",
+        "fill-antialias": false
+      }
+    },
+    {
+      "id": "rock",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "filter": ["all", ["==", "class", "rock"]],
+      "paint": {"fill-color": "#8A817C"}
+    },
+    {
+      "id": "buildings",
+      "type": "fill",
+      "source": "openmaptiles",
+      "source-layer": "building",
+      "filter": ["all"],
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "fill-color": "#d9b36c",
+        "fill-outline-color": "#8c6239",
+        "fill-antialias": true,
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "minor-roads",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": ["in", "class", "minor", "service", "track"],
+      "layout": {"visibility": "visible"},
+      "paint": {"line-color": "#e8d59b", "line-width": 3}
+    },
+    {
+      "id": "major-roads",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": ["in", "class", "primary", "secondary"],
+      "layout": {"visibility": "visible"},
+      "paint": {"line-color": "#b07b3c", "line-width": 4}
+    },
+    {
+      "id": "railways",
+      "type": "line",
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": ["==", "class", "rail"],
+      "paint": {
+        "line-color": "#555555",
+        "line-width": 2,
+        "line-dasharray": [3, 3],
+        "line-opacity": 0.7
+      }
+    },
+    {
+      "id": "place-labels",
+      "type": "symbol",
+      "source": "openmaptiles",
+      "source-layer": "place",
+      "filter": ["all"],
+      "layout": {
+        "text-field": "{name}",
+        "text-size": 14,
+        "visibility": "visible",
+        "text-pitch-alignment": "auto"
+      },
+      "paint": {
+        "text-color": "#3b2f2f",
+        "text-halo-color": "#f5e6b3",
+        "text-halo-width": 2
+      }
+    },
+    {
+      "id": "mountain-peaks",
+      "type": "symbol",
+      "source": "openmaptiles",
+      "source-layer": "mountain_peak",
+      "filter": ["all"],
+      "layout": {
+        "text-field": "▲{name}",
+        "text-size": 10,
+        "text-offset": [0, 0],
+        "visibility": "visible"
+      },
+      "paint": {
+        "text-color": "#6b4f2a",
+        "text-halo-color": "#f5e6b3",
+        "text-halo-width": 1
+      }
+    },
+    {
+      "id": "debug",
+      "type": "symbol",
+      "source": "openmaptiles",
+      "source-layer": "landcover",
+      "filter": ["all"],
+      "layout": {"text-field": "{class}", "visibility": "none"}
+    }
+  ],
+  "id": "wndjkv9"
+}
