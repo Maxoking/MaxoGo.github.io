@@ -1,5 +1,18 @@
 export class TrainerDataHandler {
 
+    static saveLastPosition(x : number, y : number) {
+        localStorage.setItem("last_position", JSON.stringify({x, y}));
+    }
+
+    static loadLastPosition() : {x: number, y: number} | null {
+        const data = localStorage.getItem("last_position");
+        return data ? JSON.parse(data) : null;
+    }
+
+    static lastPositionExists() : boolean {
+        return localStorage.getItem("last_position") !== null;
+    }
+
     static saveTrainerData(trainer_data : any) {
         localStorage.setItem("trainer_data", JSON.stringify(trainer_data));
     }

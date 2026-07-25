@@ -1,12 +1,12 @@
 import { AssetHandler } from "./AssetHandler";
 import { Pokemon, Move } from "./PokemonBattleEntity";
-import { BattleScene, MapScene, Scene, SceneHandler } from "./SceneHandler";
+import { BattleScene, BattleSceneVR, MapScene, Scene, SceneHandler } from "./SceneHandler";
 import { TrainerDataHandler } from "./TrainerDataHandler";
 
 
 export class BattleStateMachine {
     
-    private battle_scene!: BattleScene;
+    private battle_scene!: BattleScene | BattleSceneVR;
     private state! : BattleState;
     private inputLock : boolean = false;
     private textSpeed : number = 40;
@@ -20,21 +20,41 @@ export class BattleStateMachine {
     private player_pokemon_level_element: HTMLElement | null
     private enemy_pokemon_name_element: HTMLElement | null;
     private enemy_pokemon_level_element: HTMLElement | null;
+    private battle_text_element: HTMLElement | null;
+    private choices_element: HTMLElement | null;
 
-    constructor(battle_scene : BattleScene, trainer_data : any, enemy_pokemon : Pokemon) {
+
+    constructor(battle_scene : BattleScene | BattleSceneVR, trainer_data : any, enemy_pokemon : Pokemon) {
         this.battle_scene = battle_scene;
         const start_pokemon_entry = trainer_data.pokemon_team.find((p: any) => p.position === 1);
         this.player_pokemon = new Pokemon(start_pokemon_entry.pokemon_data, start_pokemon_entry.moves_data, start_pokemon_entry.level, start_pokemon_entry.experience);
         this.enemy_pokemon = enemy_pokemon;
-        this.player_hp_bar = document.getElementById("player-hp") as HTMLDivElement;
-        this.enemy_hp_bar = document.getElementById("enemy-hp") as HTMLDivElement;
-        this.xp_bar = document.getElementById("player-xp") as HTMLDivElement;
-        this.player_pokemon_name_element = document.getElementById("player-name");
-        this.player_pokemon_level_element = document.getElementById("player-level");
-        this.enemy_pokemon_name_element = document.getElementById("enemy-name");
-        this.enemy_pokemon_level_element = document.getElementById("enemy-level");
+        
+        
+        
+        
+        if (this.checkVR()) {
+            this.battle_text_element = document.getElementById("battleText-vr");
+            this.choices_element = document.getElementById("choices-vr");
+            this.player_hp_bar = document.getElementById("player-hp-vr") as HTMLDivElement;
+            this.enemy_hp_bar = document.getElementById("enemy-hp-vr") as HTMLDivElement;
+            this.xp_bar = document.getElementById("player-xp-vr") as HTMLDivElement;
+            this.player_pokemon_name_element = document.getElementById("player-name-vr");
+            this.player_pokemon_level_element = document.getElementById("player-level-vr");
+            this.enemy_pokemon_name_element = document.getElementById("enemy-name-vr");
+            this.enemy_pokemon_level_element = document.getElementById("enemy-level-vr");
+        } else {
+            this.battle_text_element = document.getElementById("battleText");
+            this.choices_element = document.getElementById("choices");
+            this.player_hp_bar = document.getElementById("player-hp") as HTMLDivElement;
+            this.enemy_hp_bar = document.getElementById("enemy-hp") as HTMLDivElement;
+            this.xp_bar = document.getElementById("player-xp") as HTMLDivElement;
+            this.player_pokemon_name_element = document.getElementById("player-name");
+            this.player_pokemon_level_element = document.getElementById("player-level");
+            this.enemy_pokemon_name_element = document.getElementById("enemy-name");
+            this.enemy_pokemon_level_element = document.getElementById("enemy-level");
+        }
 
-    
         this.player_pokemon.hp_bar = this.player_hp_bar;
         this.enemy_pokemon.hp_bar = this.enemy_hp_bar;
         this.setupDivs();
@@ -58,6 +78,10 @@ export class BattleStateMachine {
     }
 
     end() {
+        if (this.checkVR()) {
+            const battleSceneVR = this.getBattleScene() as BattleSceneVR;
+            battleSceneVR.endSession();
+        }
         SceneHandler.getInstance().showScene(new MapScene());
     }
 
@@ -76,11 +100,19 @@ export class BattleStateMachine {
     }
 
     setPlayerSprite(sprite: HTMLImageElement) {
-        this.battle_scene.playerImage = sprite;
+        // Only assign if the current scene has a playerImage (i.e., is BattleScene)
+        if ("playerImage" in this.battle_scene) {
+            (this.battle_scene as BattleScene).playerImage = sprite;
+        } 
     }
 
     setEnemySprite(sprite: HTMLImageElement) {
-        this.battle_scene.enemyImage = sprite;
+        // Only assign if the current scene has an enemyImage (i.e., is BattleScene)
+        if ("enemyImage" in this.battle_scene) {
+            (this.battle_scene as BattleScene).enemyImage = sprite;
+        } else {
+            this.battle_scene.ar_scene.addEnemyPokemonSprite(sprite);
+        }
     }
 
     getPlayerPokemon(): Pokemon {
@@ -102,6 +134,22 @@ export class BattleStateMachine {
     getXPBar(): HTMLDivElement {
         return this.xp_bar;
     }
+
+    getBattleTextElement(): HTMLElement | null {
+        return this.battle_text_element;
+    }
+
+    getChoicesElement(): HTMLElement | null {
+        return this.choices_element;
+    }
+
+    checkVR(): boolean {
+        return this.battle_scene instanceof BattleSceneVR;
+    };
+
+    getBattleScene(): BattleScene | BattleSceneVR {
+        return this.battle_scene;
+    };
 
     setupDivs() {
          if (this.player_pokemon_name_element) {
@@ -183,25 +231,53 @@ enum Substate {
 
 
 export class BattleStart extends BattleState {
+    pokemon_placed: boolean = false;
 
     async enter(): Promise<void> {
         console.log("BattleStart enter");
-        const battleText = document.getElementById("battleText") as HTMLParagraphElement;
+        const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
         this.state_machine.lockInput();
         await this.state_machine.typeText(battleText, `Ein wildes ${this.state_machine.getEnemyPokemon().name} erscheint!`);
         this.state_machine.unlockInput();
     }
 
     handleInput(keys: Record<string, boolean>): void {
-        console.log("BattleStart handleInput: ", keys);
-        if (keys[" "]) this.state_machine.setState(new ChooseActionState);
+        if (!this.state_machine.checkVR()) {
+            console.log("BattleStart handleInput: ", keys);
+            if (keys[" "]) this.state_machine.setState(new ChooseActionState);
+        } else if (keys[" "]){
+            const battleSceneVR = this.state_machine.getBattleScene() as BattleSceneVR;
+            if(battleSceneVR.tryToPlacePokemonInAR()) {
+                this.state_machine.setState(new SendOutPokemon);
+            }
+        }
+    }
+}
+
+export class SendOutPokemon extends BattleState {
+    async enter(): Promise<void> {
+        console.log("SendOutPokemon enter");
+        const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
+        this.state_machine.lockInput();
+        await this.state_machine.typeText(battleText, `Los ${this.state_machine.getPlayerPokemon().name}!`);
+        this.state_machine.unlockInput();
+    }
+
+    handleInput(keys: Record<string, boolean>): void {
+        if (keys[" "]) {
+            const battleSceneVR = this.state_machine.getBattleScene() as BattleSceneVR;
+            if(battleSceneVR.tryToPlacePlayerPokemonInAR()) {
+                battleSceneVR.hideReticle();
+                this.state_machine.setState(new ChooseActionState);
+            }
+        }
     }
 }
 
 export class ChooseActionState extends BattleState {
     async enter(): Promise<void> {
         console.log("ChooseActionState enter");
-        const battleText = document.getElementById("battleText") as HTMLParagraphElement;
+        const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
         this.state_machine.lockInput();
         await this.state_machine.typeText(battleText,`Was wird ${this.state_machine.getPlayerPokemon().name} tun?`);
         this.state_machine.unlockInput();
@@ -209,7 +285,7 @@ export class ChooseActionState extends BattleState {
     }
 
     private setActionChoices() : void {
-        const choices = document.getElementById("choices");
+        const choices = this.state_machine.getChoicesElement();
         if (!choices) return;
 
         const fightBtn = document.createElement("button");
@@ -253,7 +329,7 @@ export class SwitchPokemonState extends BattleState {
             const trainer_data = TrainerDataHandler.loadTrainerData();
             if (trainer_data && trainer_data.pokemon_team.length > 1) {
                 if(!this.switch_finished) {
-                const battleText = document.getElementById("battleText") as HTMLParagraphElement;
+                const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
                     this.state_machine.lockInput();
                     await this.state_machine.typeText(battleText, `Du schickst ${trainer_data.pokemon_team[1].pokemon_data.name} in den Kampf!`);
                     await AssetHandler.loadPokemonPlayerSprite(trainer_data.pokemon_team[1].pokemon_data.id).then(sprite => {
@@ -268,7 +344,7 @@ export class SwitchPokemonState extends BattleState {
                     this.state_machine.setState(new ChooseActionState);
                 }
             } else {
-                    const battleText = document.getElementById("battleText") as HTMLParagraphElement;
+                    const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
                     this.state_machine.lockInput();
                     await this.state_machine.typeText(battleText, `Du hast kein anderes Pokemon!`);
                     this.state_machine.unlockInput();
@@ -285,7 +361,7 @@ export class ChooseMovesState extends BattleState {
     }
 
     private setChoices(moves: Move[]) {
-        const choices = document.getElementById("choices");
+        const choices = this.state_machine.getChoicesElement();
         if (!choices) return;
 
         choices.replaceChildren(
@@ -325,7 +401,7 @@ export class ProcessMovesState extends BattleState {
         this.determineEnemyMove();
         this.determineMoveOrder();
 
-        const battleText = document.getElementById("battleText") as HTMLParagraphElement;
+        const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
         this.state_machine.lockInput();
         await this.state_machine.typeText(battleText, `${this.firstPokemon.name} setzt ${this.firstMove.name} ein!`);
         this.state_machine.unlockInput();
@@ -337,7 +413,7 @@ export class ProcessMovesState extends BattleState {
             
 
             console.log(this.substate, this.movesFinished);
-            const battleText = document.getElementById("battleText") as HTMLParagraphElement;
+            const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
 
             if (this.firstPokemon.kp === 0 || this.lastPokemon.kp === 0 ) {
 
@@ -413,7 +489,7 @@ export class CatchPokemon extends BattleState {
     async enter(): Promise<void> {
         console.log("CatchPokemon enter");
         
-        const battleText = document.getElementById("battleText") as HTMLParagraphElement;
+        const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
         this.state_machine.lockInput();
         await this.state_machine.typeText(battleText, `Du wirfst einen Pokeball!`);
         this.state_machine.unlockInput();
@@ -439,13 +515,13 @@ export class CatchPokemon extends BattleState {
                     this.state_machine.setState(new ChooseActionState);
                 }
             } else if (this.caught) {
-                const battleText = document.getElementById("battleText") as HTMLParagraphElement;
+                const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
                 this.state_machine.lockInput();
                 await this.state_machine.typeText(battleText, `Glückwunsch! Du hast ${this.state_machine.getEnemyPokemon().name} gefangen!`);
                 this.state_machine.unlockInput();
                 this.end_catch_sequence = true;
             } else {
-                const battleText = document.getElementById("battleText") as HTMLParagraphElement;
+                const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
                 this.state_machine.lockInput();
                 await this.state_machine.typeText(battleText, `${this.state_machine.getEnemyPokemon().name} konnte sich befreien!`);
                 this.state_machine.unlockInput();
@@ -460,7 +536,7 @@ export class BattleEnd extends BattleState {
 
     async enter(): Promise<void> {
         console.log("BattleEnd enter");
-        const battleText = document.getElementById("battleText") as HTMLParagraphElement;
+        const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
         this.state_machine.lockInput();
             if(this.state_machine.getPlayerPokemon().kp === 0) {
                 await this.state_machine.typeText(battleText, `${this.state_machine.getPlayerPokemon().name} wurde besiegt!`);
@@ -490,7 +566,7 @@ export class BattleExperienceGain extends BattleState {
     async enter(): Promise<void> {
         console.log("BattleExperienceGain enter");
         this.state_machine.getPlayerPokemon().experience += this.experience_gained;
-        const battleText = document.getElementById("battleText") as HTMLParagraphElement;
+        const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
         this.state_machine.lockInput();
         await this.state_machine.typeText(battleText, `${this.state_machine.getPlayerPokemon().name} erhält ${this.experience_gained} Erfahrungspunkte!`);
         this.state_machine.unlockInput();

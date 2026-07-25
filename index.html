@@ -9,10 +9,7 @@
     <meta name="apple-mobile-web-app-title" content="MaxoGo">
     <meta name="msapplication-starturl" content="/index.html">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-
-
-
+    
 
   <title>MaxoGo</title>
 
@@ -67,6 +64,18 @@
       border-image-repeat: stretch;  /* oder repeat / round */
     }
 
+    .textbox-text-vr {
+      overflow: hidden;       
+      /* height: 100%; */
+      display: flex;
+
+      /* align-items: center; */
+      border: 4vw solid transparent;
+      border-image-source: url("./assets/choices_background.png");
+      border-image-slice: 7;        /* wie weit vom Rand geschnitten wird */
+      border-image-repeat: stretch;  /* oder repeat / round */
+    }
+
     .textbox-text p {
       margin-left: 2vw;
       line-height: 1.5;
@@ -83,6 +92,21 @@
       font-family: 'pokemon-gb';
 
       border: 2vw solid transparent;
+      border-image-source: url("./assets/choices_background.png");
+      border-image-slice: 7;        /* wie weit vom Rand geschnitten wird */
+      border-image-repeat: stretch;  /* oder repeat / round */
+    }
+
+    .choices-vr {
+      min-height: 0;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      /* gap: 6px; */
+      align-content: top;
+      font-family: 'pokemon-gb';
+
+      border: 4vw solid transparent;
       border-image-source: url("./assets/choices_background.png");
       border-image-slice: 7;        /* wie weit vom Rand geschnitten wird */
       border-image-repeat: stretch;  /* oder repeat / round */
@@ -156,6 +180,7 @@
       width: 20%;
       height: auto;
     }
+    
 
 
     .hp-label {
@@ -234,10 +259,43 @@
   </style>
   </head>
   <body style="margin: 0; padding: 0">
-    <div id="map" class="scene"></div>
+    <div id="map" class="scene">
+      <button id="ar-toggle" style="position: absolute; top: 10px; left: 10px; z-index: 10000;">AR ON</button>
+    </div>
 
-    <div id="preload" class="scene" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: #000; color: #fff; font-family: 'pokemon-gb'; font-size: 24px;">
-      Press Start...
+    <div id="battle-vr-ui" class="scene" style="display: none;">
+      <!-- <button onclick="activateXR()">Start Hello WebXR</button> -->
+      <!-- <button id="ar-button">Start AR</button> -->
+
+        <div class="hp-block" style="bottom: 25%; left: 55%; width: 35%;">
+              <div class="hp-container" style="height: 5vw">
+                <horizontal style="display: flex; align-items: center; justify-content: space-between;">  
+                  <div id="player-name-vr" class="hp-label" style="font-size: 2vw;">Your Pokemon</div>
+                  <div id="player-level-vr" class="hp-label" style="font-size: 2vw;">Lv5</div>
+                </horizontal>
+                <div id="player-hp-vr" class="hp-bar" style="height: 2vw;"></div>
+                <div id="player-xp-vr" class="xp-bar"></div>
+              </div>
+            </div>
+
+            <div class="hp-block" style="left: 5%; top: 10%; width: 35%;">
+              <div class="hp-container" style="height: 5vw">
+                <horizontal style="display: flex; align-items: center; justify-content: space-between;">  
+                  <div id="enemy-name-vr" class="hp-label" style="font-size: 2vw;">Enemy Pokemon</div>
+                  <div id="enemy-level-vr" class="hp-label" style="font-size: 2vw;">Lv5</div>
+                </horizontal>
+                <div id="enemy-hp-vr" class="hp-bar" style="height: 2vw;"></div>
+              </div>
+            </div>
+
+          <div id="battle-textbox-vr" style="position: absolute; bottom: 0; width: 100%; height: 20%;">
+            <div id="dialogueBox-vr" class="textbox">
+              <div class="textbox-text">
+                <p id="battleText-vr"></p>
+              </div>
+              <div id="choices-vr" class="choices"></div>
+            </div>
+          </div>
     </div>
 
 
@@ -269,19 +327,6 @@
           </div>
 
         </div> <!-- Battle Screen -->
-
-          <!-- <div class="hp-block" style="top: 20px">
-            <div class="hp-container">
-              <horizontal style="display: flex; align-items: center; justify-content: space-between;">  
-                <div id="enemy-name" class="hp-label">Enemy Pokemon</div>
-                <div id="enemy-level" class="hp-label">Lv5</div>
-              </horizontal>
-              <div id="enemy-hp" class="hp-bar"></div>
-            </div>
-          </div> -->
-
-
-
 
         <div id="battle-textbox">
           <div id="dialogueBox" class="textbox">

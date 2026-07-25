@@ -5,7 +5,7 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-import { SceneHandler, MapScene } from "./SceneHandler";
+import { SceneHandler, MapScene, BattleSceneVR } from "./SceneHandler";
 import { Pokemon, Move } from "./PokemonBattleEntity";
 import { BattleStateMachine, BattleStart } from "./battlestatemachine";
 import { TrainerDataHandler } from "./TrainerDataHandler";
@@ -14,7 +14,8 @@ import { TrainerDataHandler } from "./TrainerDataHandler";
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js");
 }
-  
+
+
 
 const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 const ctx = canvas?.getContext("2d");
@@ -72,7 +73,8 @@ function loop(): void {
 }
 
 console.log(TrainerDataHandler.loadTrainerData());
-//SceneHandler.getInstance().showScene(new MapScene());
+SceneHandler.getInstance().showScene(new MapScene());
+//SceneHandler.getInstance().showScene(new BattleSceneVR());
 loop();
 
 
