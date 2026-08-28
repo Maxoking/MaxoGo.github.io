@@ -179,4 +179,5 @@ export class AssetHandler {
         if(!this.habitats) return null;
         return this.habitats.find((habitat: { name: string; }) => habitat.name === name);
     }
+
 }

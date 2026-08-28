@@ -1,20 +1,10 @@
-import * as L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 import { SceneHandler, MapScene, BattleSceneVR } from "./SceneHandler";
-import { Pokemon, Move } from "./PokemonBattleEntity";
-import { BattleStateMachine, BattleStart } from "./battlestatemachine";
 import { TrainerDataHandler } from "./TrainerDataHandler";
-
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js");
 }
-
 
 
 const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
@@ -49,22 +39,6 @@ window.addEventListener("touchend", (e: TouchEvent) => {
 });
 
 
-function scaleBattle() {
-  const baseWidth = 1280;
-  const baseHeight = (360 + 64) * 2;
-  const battle = document.getElementById("battle")!;
-  const textbox = document.getElementById("battle-textbox")!;
-  const textbox_height = battle.clientHeight / 3;
-
-  const scale = Math.min(
-    window.innerWidth / battle.clientWidth,
-    window.innerHeight / battle.clientHeight
-  );
-
-  textbox.style.height = `${textbox_height}px`;
-
-}
-
 
 function loop(): void {
   SceneHandler.getInstance().update();
@@ -74,7 +48,6 @@ function loop(): void {
 
 console.log(TrainerDataHandler.loadTrainerData());
 SceneHandler.getInstance().showScene(new MapScene());
-//SceneHandler.getInstance().showScene(new BattleSceneVR());
 loop();
 
 

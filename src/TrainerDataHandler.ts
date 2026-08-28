@@ -27,6 +27,27 @@ export class TrainerDataHandler {
         return trainer_data ? trainer_data.pokemon_team : [];
     }
 
+    static reorderTeam(oldIndex: number, newIndex: number) {
+        
+        const trainer_data = this.loadTrainerData();
+        if (!trainer_data) return;
+
+        const team = trainer_data.pokemon_team;
+        if (oldIndex < 0 || oldIndex >= team.length || newIndex < 0 || newIndex >= team.length) {
+            console.error("Invalid indices for reordering team.");
+            return;
+        }
+
+        const [movedPokemon] = team.splice(oldIndex, 1);
+        team.splice(newIndex, 0, movedPokemon);
+
+        for (let i = 0; i < team.length; i++) {
+            team[i].position = i + 1;
+        }
+
+        this.saveTrainerData(trainer_data);
+    }
+
 
     static clearTrainerData() {
         localStorage.removeItem("trainer_data");

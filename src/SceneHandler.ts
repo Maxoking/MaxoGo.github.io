@@ -1,5 +1,3 @@
-
-
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -12,6 +10,7 @@ import { TrainerDataHandler } from "./TrainerDataHandler";
 import { AssetHandler } from "./AssetHandler";
 import { ArScene } from "./ArRenderer";
 import { WorldGrid } from "./WorldGrid";
+import { DragHandler } from "./DragHandler";
 
 declare const AFRAME: any;
 
@@ -100,6 +99,16 @@ export class BattleSceneVR extends Scene {
     player_pokemon!: Pokemon;
     player_team!: any;
     ar_scene!: ArScene;
+    canvas!: HTMLCanvasElement;
+    ctx!: CanvasRenderingContext2D;
+    player_sprite! : HTMLImageElement;
+
+    playerSpriteData =
+    {
+        xScale: 64, 
+        yScale: 64
+    };
+
 
     constructor(trainer_data : any, enemy_pokemon : Pokemon) {
         super();
@@ -109,6 +118,8 @@ export class BattleSceneVR extends Scene {
         this.player_pokemon = new Pokemon(trainer_data.pokemon_team[0].pokemon_data, trainer_data.pokemon_team[0].moves_data);
         this.enemy_pokemon = enemy_pokemon;
         this.battle_state_machine = new BattleStateMachine(this, trainer_data, enemy_pokemon);
+        this.canvas = document.getElementById("vr-canvas") as HTMLCanvasElement;
+        this.ctx = this.canvas?.getContext("2d")!;
 
     }
 
@@ -116,15 +127,46 @@ export class BattleSceneVR extends Scene {
         console.log("BattleSceneVR initialized");
         const ui = document.getElementById("battle-vr-ui") as HTMLDivElement;
         ui.style.display = "block";
+        this.ctx.imageSmoothingEnabled = false;
+      
+        [
+            this.player_sprite
+        ] = await Promise.all([
+            AssetHandler.loadPokemonPlayerSprite(this.player_pokemon.id)
+        ]);
+
+        window.addEventListener("resize", () => {
+            this.resizeCanvas();
+            this.draw();
+        });
 
 
-         try {
-                await this.ar_scene.init();
-                this.ar_scene.start(await AssetHandler.loadPokemonPlayerSprite(this.player_pokemon.id), await AssetHandler.loadPokemonEnemySprite(this.enemy_pokemon.id));
-                
-            } catch (error) {
-                console.error("Error starting AR session:", error);
-            }
+
+        try {
+            await this.ar_scene.init();
+            this.ar_scene.start(await AssetHandler.loadPokemonPlayerSprite(this.player_pokemon.id), await AssetHandler.loadPokemonEnemySprite(this.enemy_pokemon.id));
+            
+        } catch (error) {
+            console.error("Error starting AR session:", error);
+        }
+        
+        
+        this.resizeCanvas()
+    }
+
+    draw() {
+  
+        //Clear the canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        const canvasWidth = this.canvas.width;
+        const canvasHeight = this.canvas.height;
+        const scale = Math.min(canvasWidth, canvasHeight) * 0.5;
+        
+        if(this.player_sprite) {
+            this.ctx?.drawImage(this.player_sprite, 0, canvasHeight - scale,  scale, scale);
+        }
+
     }
 
     async endSession() {
@@ -148,6 +190,16 @@ export class BattleSceneVR extends Scene {
     hideReticle() {
         this.ar_scene.hideReticle();
     }
+
+    resizeCanvas() {
+        const rect = this.canvas.getBoundingClientRect();
+
+        this.canvas.width = Math.round(rect.width);
+        this.canvas.height = Math.round(rect.height);
+        this.ctx.imageSmoothingEnabled = false;
+    }
+
+
 }
 
 
@@ -213,7 +265,6 @@ export class BattleScene extends Scene {
         super();
         console.log("BattleScene constructor called");
         console.log(trainer_data);
-        //console.log("BattleScene created with " + trainer_data.pokemon_team[0].pokemon_data.name + " and " + enemy_pokemon.name);
         this.player_team = trainer_data.pokemon_team;
         this.player_pokemon = new Pokemon(trainer_data.pokemon_team[0].pokemon_data, trainer_data.pokemon_team[0].moves_data);
         this.enemy_pokemon = enemy_pokemon;
@@ -245,13 +296,11 @@ export class MapScene extends Scene {
     spawn_markers: boolean = true;
     pokemon_data: any = {};
     moves_data: any = {};
-    find_distance: number = 50;
+    find_distance: number = 3000;
     ar_active: boolean = true;
     pokemon_markers: {marker: maplibregl.Marker, pokemon_data : any, biome : string, near : boolean}[] = [];
 
     init() {
-
-        console.log("MapScene initialized");
 
         const ar_toggle = document.getElementById("ar-toggle") as HTMLButtonElement;
         ar_toggle.textContent = this.ar_active ? "AR ON" : "AR OFF";
@@ -260,6 +309,11 @@ export class MapScene extends Scene {
             ar_toggle.textContent = this.ar_active ? "AR ON" : "AR OFF";
         });
 
+        const openTeam = document.getElementById("open-team");
+        
+
+        openTeam!.removeEventListener("click", this.toggleTeamUI);
+        openTeam!.addEventListener("click", this.toggleTeamUI);
 
         this.current_position_lat_lng = TrainerDataHandler.lastPositionExists() ? [TrainerDataHandler.loadLastPosition()!.x, TrainerDataHandler.loadLastPosition()!.y] : [51.505, -0.09];
         if(!this.map) {
@@ -267,7 +321,7 @@ export class MapScene extends Scene {
                 container: "map",
                 style: "./assets/styles/retro_rpg_world_openfreemap.json",
                 center: [this.current_position_lat_lng[1], this.current_position_lat_lng[0]], // [lng, lat]
-                zoom: 15
+                zoom: 14
             });
         }
 
@@ -277,10 +331,10 @@ export class MapScene extends Scene {
             },
             trackUserLocation: true,
             showUserLocation: true,
-            showAccuracyCircle: false 
+            showAccuracyCircle: false
         });
        
-
+        
         this.map.addControl(this.geolocationControl);
 
         this.geolocationControl.on('error', (e: any) => {
@@ -299,7 +353,9 @@ export class MapScene extends Scene {
             console.log(generation_data);
 
             if(!TrainerDataHandler.trainerDataExists()) {
-                var random_pokemon = await AssetHandler.getRandomPokemonData(5, 5);
+                var min_level = 5;
+                var max_level = 5; 
+                var random_pokemon = await AssetHandler.getRandomPokemonData(min_level, max_level);
                 TrainerDataHandler.initializeTrainerData(random_pokemon.pokemon_data, random_pokemon.moves_data);
             };
         
@@ -314,12 +370,13 @@ export class MapScene extends Scene {
             if (this.spawn_markers) {
                 console.log("Spawning Pokémon markers");
                 
-
+                var radius = 10; // in meters
+                var cellSize = 100; // in meters
                 this.world_grid = new WorldGrid(
                                 this.current_position_lat_lng[0], 
                                 this.current_position_lat_lng[1],
-                                10,
-                                100);
+                                radius,
+                                cellSize);
         
 
                 this.world_grid.cells.forEach(cell => {
@@ -367,7 +424,7 @@ export class MapScene extends Scene {
         this.geolocationControl.on('geolocate', onLocationFound);
         //this.geolocationControl.on(, onLocationError);
    
-       
+       this.setupTeamUI();
 
     }
 
@@ -398,6 +455,53 @@ export class MapScene extends Scene {
 
         
         }
+
+    private setupTeamUI() {
+
+        const team = TrainerDataHandler.getCurrentTeam();
+
+        const teamContainer = document.getElementById("pokemon-team");
+        teamContainer!.innerHTML = ""; // Clear existing content
+
+        if (teamContainer && teamContainer.classList.contains("open")) {
+            teamContainer.classList.remove("open");
+        }
+
+        if (!teamContainer) {
+            throw new Error("pokemon-team wurde nicht gefunden.");
+        }
+
+        team.forEach(pokemon => {
+            const pokemonElement = document.createElement("div");
+            pokemonElement.classList.add("pokemon-container");
+            
+
+            pokemonElement.innerHTML = `
+                <div style="display: flex; align-items: center; width: 100%;">
+                    <div style="flex: 1 1 auto;">
+                        <div class="hp-label" style="font-size: 2vw;">${pokemon.pokemon_data.name} Lv${pokemon.level}</div>
+                        <div class="hp-bar" style= "width: clamp(0%, ${(pokemon.current_hp / pokemon.pokemon_data?.stats.find((stat : any) => stat.stat.name === "hp")?.base_stat) * 100}%, 100%)"></div>
+                    </div>
+                    <div class="drag-handle" style="font-size: 4vw;">
+                    ⠿   
+                    </div>
+                </div>
+            `;
+
+            
+            teamContainer.appendChild(pokemonElement);
+        });
+
+        const dragHandler = new DragHandler(teamContainer);
+
+       
+    }
+
+    private toggleTeamUI() {
+        console.log("Toggling team UI");
+         const team = document.getElementById("pokemon-team");
+            team!.classList.toggle("open");
+    }
 
     private createPokemonMarker(
         pokemon_data: {name: string, url: string},

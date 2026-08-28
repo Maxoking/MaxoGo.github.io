@@ -31,8 +31,6 @@ export class BattleStateMachine {
         this.enemy_pokemon = enemy_pokemon;
         
         
-        
-        
         if (this.checkVR()) {
             this.battle_text_element = document.getElementById("battleText-vr");
             this.choices_element = document.getElementById("choices-vr");
@@ -249,6 +247,7 @@ export class BattleStart extends BattleState {
             const battleSceneVR = this.state_machine.getBattleScene() as BattleSceneVR;
             if(battleSceneVR.tryToPlacePokemonInAR()) {
                 this.state_machine.setState(new SendOutPokemon);
+                 battleSceneVR.hideReticle();
             }
         }
     }
@@ -265,11 +264,13 @@ export class SendOutPokemon extends BattleState {
 
     handleInput(keys: Record<string, boolean>): void {
         if (keys[" "]) {
-            const battleSceneVR = this.state_machine.getBattleScene() as BattleSceneVR;
-            if(battleSceneVR.tryToPlacePlayerPokemonInAR()) {
-                battleSceneVR.hideReticle();
-                this.state_machine.setState(new ChooseActionState);
-            }
+            // const battleSceneVR = this.state_machine.getBattleScene() as BattleSceneVR;
+            // if(battleSceneVR.tryToPlacePlayerPokemonInAR()) {
+            //     battleSceneVR.hideReticle();
+            //     this.state_machine.setState(new ChooseActionState);
+            // }
+
+            this.state_machine.setState(new ChooseActionState);
         }
     }
 }
@@ -411,7 +412,6 @@ export class ProcessMovesState extends BattleState {
     async handleInput(keys: Record<string, boolean>): Promise<void> {
         if (keys[" "]) {
             
-
             console.log(this.substate, this.movesFinished);
             const battleText = this.state_machine.getBattleTextElement() as HTMLParagraphElement;
 
